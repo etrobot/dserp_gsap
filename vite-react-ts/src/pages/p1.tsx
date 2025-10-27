@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { Feature } from '@/components/slides/n-col-features';
 import NColFeatures from '@/components/slides/n-col-features';
 import { useAzureSpeech, type AzureSpeechConfig } from '@/hooks/useAzureSpeech';
+import { getLLMContent, type StructuredLLMResponse } from '@/services/llmService';
 
 const demoFeatures: Feature[] = [
   {
@@ -36,19 +37,22 @@ const demoFeatures: Feature[] = [
   },
 ];
 
-// Define which words should trigger which feature indices
-const TRIGGER_WORDS_MAP: Record<string, number> = {
-  'React': 0,
-  'Vite': 1,
-  'TypeScript': 2,
-  'Tailwind': 3,
-  'GSAP': 4,
-  'Responsive': 5,
-};
+interface SentenceWithTiming {
+  id: string;
+  sentence: string;
+  icon: string;
+  label: string;
+  duration: number;
+  startTime: number;
+}
 
 export default function P1() {
   const [visibleIndices, setVisibleIndices] = useState<number[]>([]);
   const [useSpeechControl, setUseSpeechControl] = useState(false);
+  const [llmContent, setLLMContent] = useState<StructuredLLMResponse | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [sentences, setSentences] = useState<SentenceWithTiming[]>([]);
+  const [currentSentenceIndex, setCurrentSentenceIndex] = useState(-1);
   
   // Configure your Azure Speech credentials here
   const azureConfig: AzureSpeechConfig = {
@@ -58,70 +62,121 @@ export default function P1() {
 
   const { speak, stop, isSpeaking } = useAzureSpeech(azureConfig);
 
-  const handleStartSpeech = () => {
-    // Reset visible indices
-    setVisibleIndices([]);
-    setUseSpeechControl(true);
+  // Estimate word duration (approximately 500ms per word for natural speech)
+  const estimateWordDuration = (text: string): number => {
+    const wordCount = text.split(/\s+/).length;
+    return Math.max(2000, wordCount * 500);
+  };
 
-    const speechText = `Let me introduce you to our amazing tech stack. 
-      First, we have React, the powerful UI library. 
-      Then Vite, our blazing fast build tool. 
-      TypeScript brings type safety to our code. 
-      Tailwind CSS makes styling a breeze. 
-      GSAP powers our animations. 
-      And everything is Responsive across all devices.`;
+  const prepareSentencesWithTiming = (content: StructuredLLMResponse): SentenceWithTiming[] => {
+    const sentenceArray: SentenceWithTiming[] = [];
+    let currentStartTime = 0;
 
-    speak(speechText, {
-      onWordBoundary: (word, wordIndex) => {
-        console.log(`Word ${wordIndex}: ${word.text}`);
-        
-        // Check if this word triggers a feature
-        const featureIndex = TRIGGER_WORDS_MAP[word.text];
-        if (featureIndex !== undefined) {
-          setVisibleIndices((prev) => {
-            if (!prev.includes(featureIndex)) {
-              return [...prev, featureIndex];
-            }
-            return prev;
-          });
-        }
-      },
-      onSynthesisStart: () => {
-        console.log('Speech started');
-      },
-      onSynthesisEnd: () => {
-        console.log('Speech ended');
-      },
-      onError: (error) => {
-        console.error('Speech error:', error);
-        alert(`Speech Error: ${error}\n\nPlease configure Azure Speech credentials in .env file:\nVITE_AZURE_SPEECH_KEY=your_key\nVITE_AZURE_SPEECH_REGION=your_region`);
-      },
+    Object.entries(content).forEach(([id, data]) => {
+      const duration = estimateWordDuration(data.Sentence);
+      sentenceArray.push({
+        id,
+        sentence: data.Sentence,
+        icon: data.icon,
+        label: data.Label,
+        duration,
+        startTime: currentStartTime,
+      });
+      currentStartTime += duration;
     });
+
+    return sentenceArray;
+  };
+
+  const handleStartLLMSpeech = async () => {
+    try {
+      setIsLoading(true);
+      const apiKey = import.meta.env.VITE_LLM_API_KEY || '';
+      const apiUrl = import.meta.env.VITE_LLM_API_URL || undefined;
+
+      if (!apiKey) {
+        alert('Please configure VITE_LLM_API_KEY in .env file');
+        return;
+      }
+
+      const prompt = 'Generate a professional introduction to a modern tech stack with 5-6 key technologies. Include their benefits and why they matter.';
+      const content = await getLLMContent(prompt, { apiKey, baseUrl: apiUrl });
+
+      if (Object.keys(content).length === 0) {
+        throw new Error('No content received from LLM');
+      }
+
+      setLLMContent(content);
+      const sentencesWithTiming = prepareSentencesWithTiming(content);
+      setSentences(sentencesWithTiming);
+      setVisibleIndices([]);
+      setCurrentSentenceIndex(-1);
+      setUseSpeechControl(true);
+
+      // Combine all sentences for speech
+      const fullText = sentencesWithTiming.map(s => s.sentence).join(' ');
+
+      speak(fullText, {
+        onWordBoundary: (word) => {
+          console.log(`Word: ${word.text}`);
+          // Find which sentence we're in based on timing
+          const currentTime = word.offset;
+          const sentenceIndex = sentencesWithTiming.findIndex(
+            s => currentTime >= s.startTime && currentTime < s.startTime + s.duration
+          );
+
+          if (sentenceIndex !== currentSentenceIndex && sentenceIndex >= 0) {
+            setCurrentSentenceIndex(sentenceIndex);
+            setVisibleIndices((prev) => {
+              if (!prev.includes(sentenceIndex)) {
+                return [...prev, sentenceIndex];
+              }
+              return prev;
+            });
+          }
+        },
+        onSynthesisEnd: () => {
+          console.log('Speech ended');
+        },
+        onError: (error) => {
+          console.error('Speech error:', error);
+          alert(`Speech Error: ${error}`);
+        },
+      });
+    } catch (error) {
+      console.error('Error:', error);
+      alert(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleReset = () => {
     stop();
     setVisibleIndices([]);
+    setCurrentSentenceIndex(-1);
     setUseSpeechControl(false);
   };
 
   const handleShowAll = () => {
     stop();
     setUseSpeechControl(false);
-    setVisibleIndices([]);
+    if (sentences.length > 0) {
+      setVisibleIndices(sentences.map((_, idx) => idx));
+    }
   };
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-black via-gray-900 to-black p-8 md:p-12 lg:p-16">
       <div className="max-w-7xl mx-auto">
         {/* Control Panel */}
-        <div className="flex gap-4 justify-center mb-8">
+        <div className="flex flex-wrap gap-4 justify-center mb-8">
           <button
-            onClick={handleStartSpeech}
-            disabled={isSpeaking}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors"
+            onClick={handleStartLLMSpeech}
+            disabled={isSpeaking || isLoading}
+            className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors"
           >
-            {isSpeaking ? 'Speaking...' : 'Start Speech Demo'}
+            {isLoading ? 'Loading...' : isSpeaking ? 'Speaking...' : 'Start LLM Speech'}
           </button>
           <button
             onClick={handleReset}
@@ -136,6 +191,26 @@ export default function P1() {
             Show All
           </button>
         </div>
+
+        {/* LLM Content Display */}
+        {llmContent && Object.keys(llmContent).length > 0 && (
+          <div className="mb-8 p-4 bg-gray-800 rounded-lg">
+            <h3 className="text-white font-bold mb-4">Generated Content:</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {sentences.map((sentence, idx) => (
+                <div
+                  key={sentence.id}
+                  className={`p-3 rounded bg-gray-700 text-white transition-opacity ${
+                    visibleIndices.includes(idx) ? 'opacity-100' : 'opacity-50'
+                  }`}
+                >
+                  <div className="text-sm font-semibold">{sentence.label}</div>
+                  <div className="text-xs text-gray-300 mt-1">{sentence.sentence}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <NColFeatures
           title="Welcome to Slides App"
