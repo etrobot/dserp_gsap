@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
-import { PageProvider } from './PageContext';
+import Squares from './background/squares';
 
 interface PlayerProps {
   pages: ReactNode[];
@@ -71,12 +71,15 @@ const Player: React.FC<PlayerProps> = ({ pages, className = '' }) => {
 
   return (
     <div className={`flex flex-col items-center justify-center min-h-screen bg-black p-8 ${className}`}>
-      <div 
-        className="w-full max-w-7xl bg-gradient-to-b from-gray-900 to-black rounded-lg shadow-2xl overflow-hidden relative"
+      <div
+        className="w-full max-w-7xl rounded-lg shadow-2xl overflow-hidden relative"
         style={{ aspectRatio: '16 / 10' }}
       >
-        <div 
-          className="w-full h-full p-8 overflow-hidden"
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+          <Squares />
+        </div>
+        <div
+          className="w-full h-full p-8 overflow-hidden relative z-10"
         >
           {pages[currentPage]}
         </div>
