@@ -1,4 +1,5 @@
-import { useRef, useEffect, useState, ReactNode } from 'react';
+import { useRef, useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
 
 interface FadeContentProps {
   children: ReactNode;
@@ -9,6 +10,7 @@ interface FadeContentProps {
   threshold?: number;
   initialOpacity?: number;
   className?: string;
+  freeze?: boolean;
 }
 
 const FadeContent: React.FC<FadeContentProps> = ({
@@ -19,37 +21,27 @@ const FadeContent: React.FC<FadeContentProps> = ({
   delay = 0,
   threshold = 0.1,
   initialOpacity = 0,
-  className = ''
+  className = '',
+  freeze = false
 }) => {
   const [inView, setInView] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const element = ref.current;
-    if (!element) return;
+    if (freeze) {
+      setInView(true);
+      return;
+    }
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          observer.unobserve(element);
-          setTimeout(() => {
-            setInView(true);
-          }, delay);
-        }
-      },
-      { threshold }
-    );
-
-    observer.observe(element);
-
-    return () => observer.disconnect();
-  }, [threshold, delay]);
+    // Immediately show content without animation to prevent layout shift during page transitions
+    setInView(true);
+  }, [freeze]);
 
   return (
     <div
       ref={ref}
       className={className}
-      style={{
+      style={freeze ? undefined : {
         opacity: inView ? 1 : initialOpacity,
         transition: `opacity ${duration}ms ${easing}, filter ${duration}ms ${easing}`,
         filter: blur ? (inView ? 'blur(0px)' : 'blur(10px)') : 'none'

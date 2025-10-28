@@ -68,7 +68,7 @@ export async function getLLMContent(
       content: `You are a helpful assistant. Your response MUST be a valid JSON object with the structure: {
   "1": {
     "Sentence": "...",
-    "icon": "IconName",
+    "icon": "emoji",
     "Label": "label text"
   },
   "2": {

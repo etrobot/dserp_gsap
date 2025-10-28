@@ -7,6 +7,7 @@ type StarBorderProps<T extends React.ElementType> = React.ComponentPropsWithoutR
   color?: string;
   speed?: React.CSSProperties['animationDuration'];
   thickness?: number;
+  freeze?: boolean;
 };
 
 const StarBorder = <T extends React.ElementType = 'button'>({
@@ -15,6 +16,7 @@ const StarBorder = <T extends React.ElementType = 'button'>({
   color = 'white',
   speed = '6s',
   thickness = 1,
+  freeze = false,
   children,
   ...rest
 }: StarBorderProps<T>) => {
@@ -22,7 +24,7 @@ const StarBorder = <T extends React.ElementType = 'button'>({
 
   return (
     <Component
-      className={`relative inline-block rounded-[20px] ${className}`}
+      className={`relative block rounded-[20px] ${className}`}
       {...(rest as any)}
       style={{
         padding: `${thickness}px`,
@@ -48,7 +50,7 @@ const StarBorder = <T extends React.ElementType = 'button'>({
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            animation: `star-movement-clockwise ${speed} linear infinite`,
+            animation: freeze ? 'none' : `star-movement-clockwise ${speed} linear infinite`,
           }}
         />
       </div>

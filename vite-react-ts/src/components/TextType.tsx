@@ -1,6 +1,6 @@
 'use client';
 
-import { ElementType, useEffect, useRef, useState, createElement, useMemo, useCallback } from 'react';
+import { type ElementType, useEffect, useRef, useState, createElement, useMemo, useCallback } from 'react';
 import { gsap } from 'gsap';
 
 interface TextTypeProps {
@@ -31,7 +31,7 @@ const TextType = ({
   initialDelay = 0,
   pauseDuration = 2000,
   deletingSpeed = 30,
-  loop = true,
+  loop = false,
   className = '',
   showCursor = true,
   hideCursorWhileTyping = false,
