@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import type { ReactNode } from 'react';
 import Squares from './background/squares';
+import { useSpeech } from '../hooks/useSpeech';
 
 interface PlayerProps {
   pages: ReactNode[];
@@ -11,6 +12,13 @@ const Player: React.FC<PlayerProps> = ({ pages, className = '' }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [inputPage, setInputPage] = useState('1');
   const totalPages = pages.length;
+  const { speak, stop, isSpeaking } = useSpeech();
+  const contentRef = useRef<HTMLDivElement>(null);
+  const isSpeakingRef = useRef(false);
+  const currentPageRef = useRef(0);
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const speakStartTimeRef = useRef<number>(0);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const goToPage = useCallback((pageIndex: number) => {
     if (pageIndex >= 0 && pageIndex < totalPages) {
@@ -26,6 +34,75 @@ const Player: React.FC<PlayerProps> = ({ pages, className = '' }) => {
   const handleNextPage = useCallback(() => {
     goToPage(currentPage + 1);
   }, [currentPage, goToPage]);
+
+  const extractPageText = useCallback((): string => {
+    if (!contentRef.current) return '';
+    const paragraphs = contentRef.current.querySelectorAll('p');
+    return Array.from(paragraphs).map(p => p.textContent || '').join(' ');
+  }, []);
+
+  const speakContinuous = useCallback((startPageIndex: number) => {
+    if (startPageIndex >= totalPages || !isSpeakingRef.current) {
+      isSpeakingRef.current = false;
+      if (timerRef.current) clearInterval(timerRef.current);
+      return;
+    }
+
+    currentPageRef.current = startPageIndex;
+    setCurrentPage(startPageIndex);
+    setInputPage(String(startPageIndex + 1));
+
+    setTimeout(() => {
+      const text = extractPageText();
+      if (!text) {
+        isSpeakingRef.current = false;
+        if (timerRef.current) clearInterval(timerRef.current);
+        return;
+      }
+
+      speak(text, {
+        onEnd: () => {
+          if (isSpeakingRef.current && startPageIndex < totalPages - 1) {
+            speakContinuous(startPageIndex + 1);
+          } else {
+            isSpeakingRef.current = false;
+            if (timerRef.current) clearInterval(timerRef.current);
+          }
+        },
+        onError: (error) => {
+          console.error('Speech error:', error);
+          isSpeakingRef.current = false;
+          if (timerRef.current) clearInterval(timerRef.current);
+        },
+      });
+    }, 100);
+  }, [extractPageText, speak, totalPages]);
+
+  const handlePlayAudio = useCallback(() => {
+    isSpeakingRef.current = true;
+    speakStartTimeRef.current = Date.now();
+    setElapsedTime(0);
+    
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - speakStartTimeRef.current) / 1000);
+      setElapsedTime(elapsed);
+    }, 100);
+    
+    speakContinuous(currentPage);
+  }, [currentPage, speakContinuous]);
+
+  const handleStopAudio = useCallback(() => {
+    isSpeakingRef.current = false;
+    if (timerRef.current) clearInterval(timerRef.current);
+    stop();
+  }, [stop]);
+
+  const formatTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -69,6 +146,12 @@ const Player: React.FC<PlayerProps> = ({ pages, className = '' }) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handlePrevPage, handleNextPage]);
 
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, []);
+
   return (
     <div className={`flex flex-col items-center justify-center min-h-screen bg-black p-8 ${className}`}>
       <div
@@ -79,6 +162,7 @@ const Player: React.FC<PlayerProps> = ({ pages, className = '' }) => {
           <Squares />
         </div>
         <div
+          ref={contentRef}
           className="w-full h-full p-8 overflow-hidden relative z-10"
         >
           {pages[currentPage]}
@@ -92,6 +176,20 @@ const Player: React.FC<PlayerProps> = ({ pages, className = '' }) => {
           className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
         >
           ←
+        </button>
+
+        <button
+          onClick={isSpeaking ? handleStopAudio : handlePlayAudio}
+          className={`px-4 py-2 rounded text-white transition-colors ${
+            isSpeaking
+              ? 'bg-red-600 hover:bg-red-500'
+              : 'bg-blue-600 hover:bg-blue-500'
+          }`}
+        >
+          {elapsedTime > 0 
+            ? formatTime(elapsedTime)
+            : '▶ 朗读'
+          }
         </button>
 
         <div className="flex items-center gap-2 text-white">

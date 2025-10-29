@@ -75,7 +75,7 @@ export const useAzureSpeech = (config?: AzureSpeechConfig) => {
       let wordIndex = 0;
 
       // Word boundary event
-      synthesizer.wordBoundary = (s: any, e: any) => {
+      synthesizer.wordBoundary = (_: any, e: any) => {
         const wordBoundary: WordBoundary = {
           text: e.text,
           offset: e.audioOffset / 10000, // Convert to milliseconds

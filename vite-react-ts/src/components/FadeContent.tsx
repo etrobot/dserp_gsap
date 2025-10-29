@@ -7,7 +7,6 @@ interface FadeContentProps {
   duration?: number;
   easing?: string;
   delay?: number;
-  threshold?: number;
   initialOpacity?: number;
   className?: string;
   freeze?: boolean;
@@ -19,7 +18,6 @@ const FadeContent: React.FC<FadeContentProps> = ({
   duration = 1000,
   easing = 'ease-out',
   delay = 0,
-  threshold = 0.1,
   initialOpacity = 0,
   className = '',
   freeze = false
@@ -44,6 +42,7 @@ const FadeContent: React.FC<FadeContentProps> = ({
       style={freeze ? undefined : {
         opacity: inView ? 1 : initialOpacity,
         transition: `opacity ${duration}ms ${easing}, filter ${duration}ms ${easing}`,
+        transitionDelay: `${delay}ms`,
         filter: blur ? (inView ? 'blur(0px)' : 'blur(10px)') : 'none'
       }}
     >
