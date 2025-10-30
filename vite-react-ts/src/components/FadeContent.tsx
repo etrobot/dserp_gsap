@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 
 interface FadeContentProps {
   children: ReactNode;
@@ -10,6 +10,8 @@ interface FadeContentProps {
   initialOpacity?: number;
   className?: string;
   freeze?: boolean;
+  style?: CSSProperties;
+  fill?: boolean;
 }
 
 const FadeContent: React.FC<FadeContentProps> = ({
@@ -20,7 +22,9 @@ const FadeContent: React.FC<FadeContentProps> = ({
   delay = 0,
   initialOpacity = 0,
   className = '',
-  freeze = false
+  freeze = false,
+  style,
+  fill = true
 }) => {
   const [inView, setInView] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
@@ -35,15 +39,21 @@ const FadeContent: React.FC<FadeContentProps> = ({
     setInView(true);
   }, [freeze]);
 
+  const transitionStyles = freeze ? {} : {
+    opacity: inView ? 1 : initialOpacity,
+    transition: `opacity ${duration}ms ${easing}, filter ${duration}ms ${easing}`,
+    transitionDelay: `${delay}ms`,
+    filter: blur ? (inView ? 'blur(0px)' : 'blur(10px)') : 'none'
+  };
+
   return (
     <div
       ref={ref}
       className={className}
-      style={freeze ? undefined : {
-        opacity: inView ? 1 : initialOpacity,
-        transition: `opacity ${duration}ms ${easing}, filter ${duration}ms ${easing}`,
-        transitionDelay: `${delay}ms`,
-        filter: blur ? (inView ? 'blur(0px)' : 'blur(10px)') : 'none'
+      style={{
+        ...(fill && { width: '100%', height: '100%' }),
+        ...transitionStyles,
+        ...style
       }}
     >
       {children}

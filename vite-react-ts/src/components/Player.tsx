@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import type { ReactNode } from 'react';
-import Squares from './background/squares';
 import { useSpeech } from '../hooks/useSpeech';
 
 interface PlayerProps {
   pages: ReactNode[];
+  readingTexts?: string[];
   className?: string;
 }
 
-const Player: React.FC<PlayerProps> = ({ pages, className = '' }) => {
+const Player: React.FC<PlayerProps> = ({ pages, readingTexts = [], className = '' }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [inputPage, setInputPage] = useState('1');
   const totalPages = pages.length;
@@ -35,11 +35,15 @@ const Player: React.FC<PlayerProps> = ({ pages, className = '' }) => {
     goToPage(currentPage + 1);
   }, [currentPage, goToPage]);
 
-  const extractPageText = useCallback((): string => {
+  const extractPageText = useCallback((pageIndex: number): string => {
+    // Use reading text if available, otherwise extract from DOM
+    if (readingTexts[pageIndex]) {
+      return readingTexts[pageIndex];
+    }
     if (!contentRef.current) return '';
     const paragraphs = contentRef.current.querySelectorAll('p');
     return Array.from(paragraphs).map(p => p.textContent || '').join(' ');
-  }, []);
+  }, [readingTexts]);
 
   const speakContinuous = useCallback((startPageIndex: number) => {
     if (startPageIndex >= totalPages || !isSpeakingRef.current) {
@@ -53,7 +57,7 @@ const Player: React.FC<PlayerProps> = ({ pages, className = '' }) => {
     setInputPage(String(startPageIndex + 1));
 
     setTimeout(() => {
-      const text = extractPageText();
+      const text = extractPageText(startPageIndex);
       if (!text) {
         isSpeakingRef.current = false;
         if (timerRef.current) clearInterval(timerRef.current);
@@ -155,15 +159,12 @@ const Player: React.FC<PlayerProps> = ({ pages, className = '' }) => {
   return (
     <div className={`flex flex-col items-center justify-center min-h-screen bg-black p-8 ${className}`}>
       <div
-        className="w-full max-w-7xl rounded-lg shadow-2xl overflow-hidden relative"
+        className="w-full max-w-7xl rounded-lg shadow-2xl overflow-hidden relative bg-black"
         style={{ aspectRatio: '16 / 10' }}
       >
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
-          <Squares />
-        </div>
         <div
           ref={contentRef}
-          className="w-full h-full p-8 overflow-hidden relative z-10"
+          className="w-full h-full overflow-hidden"
         >
           {pages[currentPage]}
         </div>
