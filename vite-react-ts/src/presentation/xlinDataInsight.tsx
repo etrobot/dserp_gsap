@@ -1,12 +1,13 @@
 import type { ReactNode } from 'react';
 import TextType from '@/components/TextType';
+import MultiLineTextType from '@/components/MultiLineTextType';
+import FloatingLinesText from '@/components/FloatingLinesText';
 import StarBorder from '@/components/StarBorder';
 import FadeContent from '@/components/FadeContent';
 import type { ScriptSection } from '@/content/xlinDataInsghtScript';
 import TopNotesChart from '@/components/slide/TopNotesChart';
 import TopicDistributionChart from '@/components/slide/TopicDistributionChart';
 import CumulativeTrendChart from '@/components/slide/CumulativeTrendChart';
-import Squares from '@/components/background/squares';
 import { CheckCircle2, Star, Zap, TrendingUp } from 'lucide-react';
 
 const Presentation = ({ section, index, total }: { section: ScriptSection; index: number; total: number }) => {
@@ -35,14 +36,16 @@ const Presentation = ({ section, index, total }: { section: ScriptSection; index
         {/* Header with absolute positioning */}
         <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-8 pt-4 pb-2">
           <div className="flex items-center gap-3">
-            <TextType
-              text={section.title}
-              as="h1"
-              className="text-2xl md:text-3xl font-bold text-white"
-              showCursor={false}
-              typingSpeed={30}
-              startOnVisible={true}
-            />
+            {section.title && (
+              <TextType
+                text={section.title}
+                as="h1"
+                className="text-2xl md:text-3xl font-bold text-white"
+                showCursor={false}
+                typingSpeed={30}
+                startOnVisible={true}
+              />
+            )}
           </div>
           <span className="text-gray-400 text-sm">
             {index + 1}/{total} 
@@ -65,14 +68,16 @@ const Presentation = ({ section, index, total }: { section: ScriptSection; index
           <div className="text-9xl mb-8">{section.illustration}</div>
         </FadeContent>
         
-        <FadeContent duration={800} delay={200} fill={false}>
-          <h1 className="text-5xl md:text-6xl font-black text-white mb-12 text-center">
-            {section.title}
-          </h1>
-        </FadeContent>
+        {section.title && (
+          <FadeContent duration={800} delay={200} fill={false}>
+            <h1 className="text-5xl md:text-6xl font-black text-white mb-12 text-center">
+              {section.title}
+            </h1>
+          </FadeContent>
+        )}
 
         <div className="w-full max-w-3xl space-y-4">
-          {section.content_parts.map((line, i) => (
+          {section.content_parts?.map((line, i) => (
             <FadeContent key={i} duration={600} delay={400 + i * 100} fill={false}>
               <p className="text-white text-lg md:text-xl leading-relaxed text-center">
                 {line}
@@ -96,14 +101,16 @@ const Presentation = ({ section, index, total }: { section: ScriptSection; index
           <FadeContent duration={600}>
             <div className="flex flex-col items-center justify-center">
               <div className="text-9xl mb-6">{section.illustration}</div>
-              <h1 className="text-4xl md:text-5xl font-black text-white text-center">
-                {section.title}
-              </h1>
+              {section.title && (
+                <h1 className="text-4xl md:text-5xl font-black text-white text-center">
+                  {section.title}
+                </h1>
+              )}
             </div>
           </FadeContent>
 
           <div className="space-y-5">
-            {section.content_parts.map((line, i) => (
+            {section.content_parts?.map((line, i) => (
               <FadeContent key={i} duration={600} delay={300 + i * 120} fill={false}>
                 <StarBorder as="div" color="#8b5cf6" speed={`${4 + i}s`} thickness={1}>
                   <div className="px-6 py-4">
@@ -135,14 +142,16 @@ const Presentation = ({ section, index, total }: { section: ScriptSection; index
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             <span className="text-5xl">{section.illustration}</span>
-            <TextType
-              text={section.title}
-              as="h1"
-              className="text-3xl md:text-4xl font-bold text-white"
-              showCursor={false}
-              typingSpeed={30}
-              startOnVisible={true}
-            />
+            {section.title && (
+              <TextType
+                text={section.title}
+                as="h1"
+                className="text-3xl md:text-4xl font-bold text-white"
+                showCursor={false}
+                typingSpeed={30}
+                startOnVisible={true}
+              />
+            )}
           </div>
           <span className="text-gray-400 text-sm">
             {index + 1}/{total} 
@@ -150,7 +159,7 @@ const Presentation = ({ section, index, total }: { section: ScriptSection; index
         </div>
 
         <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 content-center">
-          {section.content_parts.map((line, i) => (
+          {section.content_parts?.map((line, i) => (
             <FadeContent key={i} duration={500} delay={100 + i * 80} fill={false}>
               <StarBorder 
                 as="div" 
@@ -172,16 +181,90 @@ const Presentation = ({ section, index, total }: { section: ScriptSection; index
     );
   }
 
+  // MultiLine Type layout - cycling through lines with type and reverse animation
+  else if (layout === 'multiline-type') {
+    content = (
+      <div className="w-full h-full flex flex-col items-center justify-center relative px-8 pb-8">
+        <div className="absolute top-6 right-6 text-gray-400 text-sm">
+          {index + 1}/{total} 
+        </div>
+
+        {section.illustration && (
+          <FadeContent duration={600} fill={false}>
+            <div className="text-9xl mb-8">{section.illustration}</div>
+          </FadeContent>
+        )}
+
+        <div className="w-full max-w-4xl">
+          {section.content_parts && section.content_parts.length > 0 && (
+            <MultiLineTextType
+              lines={section.content_parts}
+              className="text-white text-2xl md:text-4xl font-bold text-center leading-relaxed"
+              lineClassName="tracking-tight"
+              typingSpeed={60}
+              deletingSpeed={20}
+              pauseAfterTyping={1000}
+              pauseAfterDeleting={400}
+              initialDelay={0}
+              showCursor={true}
+              cursorCharacter="|"
+              cursorClassName="text-purple-400"
+              startOnVisible={true}
+            />
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Floating Lines layout - lines float up continuously and fade out
+  else if (layout === 'floating-lines') {
+    content = (
+      <div className="w-full h-full flex flex-col items-center justify-center relative px-8 pb-8">
+        <div className="absolute top-6 right-6 text-gray-400 text-sm">
+          {index + 1}/{total} 
+        </div>
+
+        {section.title && (
+          <FadeContent duration={600} fill={false}>
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-8 text-center">
+              {section.title}
+            </h1>
+          </FadeContent>
+        )}
+
+        {section.illustration && (
+          <FadeContent duration={600} delay={200} fill={false}>
+            <div className="text-8xl mb-12">{section.illustration}</div>
+          </FadeContent>
+        )}
+
+        <div className="relative w-full max-w-4xl h-64 flex items-center justify-center">
+          {section.content_parts && section.content_parts.length > 0 && (
+            <FloatingLinesText
+              lines={section.content_parts}
+              className="w-full h-full"
+              lineClassName="text-white text-2xl md:text-3xl font-bold text-center px-8"
+              floatDuration={4}
+              linePause={0.3}
+              initialDelay={section.illustration ? 1 : 0.5}
+              startY={120}
+              endY={-200}
+              fadeOutStart={0.65}
+              ease="power2.out"
+              startOnVisible={true}
+            />
+          )}
+        </div>
+      </div>
+    );
+  }
+
 
 
   return (
-    <div className="relative w-full h-full bg-black overflow-hidden">
-      <div className="absolute inset-0 overflow-hidden opacity-50">
-        <Squares />
-      </div>
-      <div className="relative z-10 w-full h-full">
-        {content}
-      </div>
+    <div className="relative w-full h-full">
+      {content}
     </div>
   );
 };

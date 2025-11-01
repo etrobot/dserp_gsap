@@ -1,23 +1,24 @@
 import { useMemo, type ReactNode } from 'react'
 import Player from '@/components/Player'
 import Presentation from '@/presentation/xlinDataInsight'
-import { xiaLinScript } from '@/content/xlinDataInsghtScript'
+import { memeCoinScript } from '@/content/memeCoinScript'
 
 function App() {
-  const { pages, readingTexts } = useMemo(() => {
+  const { pages, subtitleTexts } = useMemo(() => {
     const pagesArr = [] as ReactNode[]
-    const readingArr = [] as string[]
+    const subtitleArr = [] as string[]
 
-    for (let i = 0; i < xiaLinScript.sections.length; i++) {
-      const section = xiaLinScript.sections[i]
-      pagesArr.push(<Presentation key={section.id} section={section} index={i} total={xiaLinScript.sections.length} />)
-      readingArr.push(section.reading || section.content_parts.join('。'))
+    for (let i = 0; i < memeCoinScript.sections.length; i++) {
+      const section = memeCoinScript.sections[i]
+      pagesArr.push(<Presentation key={section.id} section={section} index={i} total={memeCoinScript.sections.length} />)
+      // Join all non-empty scripts with periods for TTS narration
+      subtitleArr.push(section.scripts?.filter(s => s.trim()).join(' ') || section.content_parts?.join('。') || '')
     }
 
-    return { pages: pagesArr, readingTexts: readingArr }
+    return { pages: pagesArr, subtitleTexts: subtitleArr }
   }, [])
 
-  return <Player pages={pages} readingTexts={readingTexts} />
+  return <Player pages={pages} subtitleTexts={subtitleTexts} />
 }
 
 export default App

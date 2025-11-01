@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { useSpeech } from '../hooks/useSpeech';
+import Hyperspeed from '@/components/background/highspeed';
 
 interface PlayerProps {
   pages: ReactNode[];
-  readingTexts?: string[];
+  subtitleTexts?: string[];
   className?: string;
 }
 
-const Player: React.FC<PlayerProps> = ({ pages, readingTexts = [], className = '' }) => {
+const Player: React.FC<PlayerProps> = ({ pages, subtitleTexts = [], className = '' }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [inputPage, setInputPage] = useState('1');
   const totalPages = pages.length;
@@ -36,14 +37,14 @@ const Player: React.FC<PlayerProps> = ({ pages, readingTexts = [], className = '
   }, [currentPage, goToPage]);
 
   const extractPageText = useCallback((pageIndex: number): string => {
-    // Use reading text if available, otherwise extract from DOM
-    if (readingTexts[pageIndex]) {
-      return readingTexts[pageIndex];
+    // Use subtitle text if available, otherwise extract from DOM
+    if (subtitleTexts[pageIndex]) {
+      return subtitleTexts[pageIndex];
     }
     if (!contentRef.current) return '';
     const paragraphs = contentRef.current.querySelectorAll('p');
     return Array.from(paragraphs).map(p => p.textContent || '').join(' ');
-  }, [readingTexts]);
+  }, [subtitleTexts]);
 
   const speakContinuous = useCallback((startPageIndex: number) => {
     if (startPageIndex >= totalPages || !isSpeakingRef.current) {
@@ -162,9 +163,54 @@ const Player: React.FC<PlayerProps> = ({ pages, readingTexts = [], className = '
         className="w-full max-w-7xl rounded-lg shadow-2xl overflow-hidden relative bg-black"
         style={{ aspectRatio: '16 / 10' }}
       >
+        {/* Fixed background - never unmounts */}
+        <div className="absolute inset-0 overflow-hidden opacity-50 pointer-events-none flex items-center justify-center">
+          <div className="w-full h-full">
+            <Hyperspeed
+              effectOptions={{
+                onSpeedUp: () => { },
+                onSlowDown: () => { },
+                distortion: 'turbulentDistortion',
+                length: 400,
+                roadWidth: 9,
+                islandWidth: 1.5,
+                lanesPerRoad: 3,
+                fov: 80,
+                fovSpeedUp: 150,
+                speedUp: 2,
+                carLightsFade: 0.4,
+                totalSideLightSticks: 20,
+                lightPairsPerRoadWay: 30,
+                shoulderLinesWidthPercentage: 0.05,
+                brokenLinesWidthPercentage: 0.1,
+                brokenLinesLengthPercentage: 0.5,
+                lightStickWidth: [0.12, 0.5],
+                lightStickHeight: [1.3, 1.7],
+                movingAwaySpeed: [60, 80],
+                movingCloserSpeed: [-120, -160],
+                carLightsLength: [400 * 0.03, 400 * 0.2],
+                carLightsRadius: [0.05, 0.14],
+                carWidthPercentage: [0.3, 0.5],
+                carShiftX: [-0.2, 0.2],
+                carFloorSeparation: [0, 5],
+                colors: {
+                  roadColor: 0x080808,
+                  islandColor: 0x0a0a0a,
+                  background: 0x000000,
+                  shoulderLines: 0xFFFFFF,
+                  brokenLines: 0xFFFFFF,
+                  leftCars: [0xD856BF, 0x6750A2, 0xC247AC],
+                  rightCars: [0x03B3C3, 0x0E5EA5, 0x324555],
+                  sticks: 0x03B3C3,
+                }
+              }}
+            />
+          </div>
+        </div>
+        {/* Content layer */}
         <div
           ref={contentRef}
-          className="w-full h-full overflow-hidden"
+          className="relative z-10 w-full h-full overflow-hidden"
         >
           {pages[currentPage]}
         </div>
