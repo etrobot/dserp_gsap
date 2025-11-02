@@ -27,6 +27,8 @@ export type ScriptSection = {
 
 export type ScriptSpec = {
   title: string;
+  language?: string; // 默认语言代码，如 'zh-CN', 'en-US'
+  languages?: string[]; // 支持的语言列表，用于批量录制
   sections: ScriptSection[];
 };
 

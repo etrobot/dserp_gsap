@@ -69,6 +69,7 @@ function App() {
       scriptFiles={scriptsList?.files || []}
       currentScript={selectedFile}
       onScriptChange={setSelectedFile}
+      defaultLanguage={scriptData?.language || 'zh-CN'}
     />
   )
 }

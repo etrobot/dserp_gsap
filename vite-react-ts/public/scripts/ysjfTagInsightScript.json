@@ -1,5 +1,7 @@
 {
   "title": "标签数据学习分析报告",
+  "language": "zh-CN",
+  "languages": ["zh-CN", "en-US"],
   "sections": [
     {
       "id": "cover",

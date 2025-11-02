@@ -13,6 +13,7 @@ interface PlayerProps {
   currentScript?: string;
   onScriptChange?: (fileName: string) => void;
   pageLayouts?: string[];
+  defaultLanguage?: string; // 从 JSON 读取的默认语言
 }
 
 const Player: React.FC<PlayerProps> = ({ 
@@ -22,11 +23,12 @@ const Player: React.FC<PlayerProps> = ({
   scriptFiles = [],
   currentScript = '',
   onScriptChange,
-  pageLayouts = []
+  pageLayouts = [],
+  defaultLanguage = 'zh-CN'
 }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [inputPage, setInputPage] = useState('1');
-  const [language, setLanguage] = useState<string>('zh-CN');
+  const [language, setLanguage] = useState<string>(defaultLanguage);
   const totalPages = pages.length;
   const { speak, stop, isSpeaking } = useSpeech();
   const contentRef = useRef<HTMLDivElement>(null);
@@ -274,6 +276,11 @@ const Player: React.FC<PlayerProps> = ({
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handlePrevPage, handleNextPage]);
+
+  // 当脚本切换时，自动更新语言为新脚本的默认语言
+  useEffect(() => {
+    setLanguage(defaultLanguage);
+  }, [defaultLanguage]);
 
   useEffect(() => {
     return () => {
