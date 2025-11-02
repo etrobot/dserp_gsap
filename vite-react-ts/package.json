@@ -19,6 +19,7 @@
     "echarts": "^5.6.0",
     "echarts-for-react": "^3.0.2",
     "gsap": "^3.13.0",
+    "html-to-image": "^1.11.13",
     "lucide-react": "^0.548.0",
     "microsoft-cognitiveservices-speech-sdk": "^1.46.0",
     "postprocessing": "^6.37.8",

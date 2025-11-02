@@ -1,31 +1,69 @@
-import type { ReactNode } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import TextType from '@/components/TextType';
 import MultiLineTextType from '@/components/MultiLineTextType';
 import FloatingLinesText from '@/components/FloatingLinesText';
-import StarBorder from '@/components/StarBorder';
 import FadeContent from '@/components/FadeContent';
 import type { ScriptSection } from '@/content/xlinDataInsghtScript';
 import TopNotesChart from '@/components/slide/TopNotesChart';
 import TopicDistributionChart from '@/components/slide/TopicDistributionChart';
 import CumulativeTrendChart from '@/components/slide/CumulativeTrendChart';
-import { CheckCircle2, Star, Zap, TrendingUp } from 'lucide-react';
+import GenericEChart from '@/components/slide/GenericEChart';
+import { Feature } from '@/components/slide';
 
+/**
+ * Generic Presentation Component
+ * Renders different slide layouts based on the section configuration
+ * Supports: cover, chart, keypoints, flow, multiline-type, floating-lines
+ */
 const Presentation = ({ section, index, total }: { section: ScriptSection; index: number; total: number }) => {
   const layout = section.layout || 'keypoints';
+  const [chartData, setChartData] = useState<any>(section.chartData);
+  const [loadingChart, setLoadingChart] = useState(false);
+  
+  // Load chart data from URL if needed
+  useEffect(() => {
+    if (layout === 'chart' && section.chartDataUrl && !section.chartData) {
+      setLoadingChart(true);
+      fetch(section.chartDataUrl)
+        .then(res => res.json())
+        .then(data => {
+          setChartData(data);
+          setLoadingChart(false);
+        })
+        .catch(err => {
+          console.error('Failed to load chart data:', err);
+          setLoadingChart(false);
+        });
+    }
+  }, [layout, section.chartDataUrl, section.chartData]);
+
   let content: ReactNode;
 
   // Chart layout - display data visualizations
   if (layout === 'chart') {
     const renderChart = () => {
-      if (!section.chartData) return null;
+      if (loadingChart) {
+        return <div className="flex items-center justify-center h-full text-white">Loading chart...</div>;
+      }
       
       switch (section.chartType) {
         case 'topNotes':
-          return <TopNotesChart data={section.chartData as any} />;
+          if (!chartData) return null;
+          return <TopNotesChart data={chartData as any} />;
         case 'topicDistribution':
-          return <TopicDistributionChart data={section.chartData as any} />;
+          if (!chartData) return null;
+          return <TopicDistributionChart data={chartData as any} />;
         case 'cumulativeTrend':
-          return <CumulativeTrendChart data={section.chartData as any} />;
+          if (!chartData) return null;
+          return <CumulativeTrendChart data={chartData as any} />;
+        case 'echarts':
+          const chartConfig = (section as any).chartConfig;
+          if (!chartConfig) {
+            console.error('No chartConfig found for echarts', section);
+            return <div className="flex items-center justify-center h-full text-white">Chart config missing</div>;
+          }
+          console.log('Rendering echarts with config:', chartConfig);
+          return <GenericEChart config={chartConfig} />;
         default:
           return null;
       }
@@ -77,12 +115,19 @@ const Presentation = ({ section, index, total }: { section: ScriptSection; index
         )}
 
         <div className="w-full max-w-3xl space-y-4">
-          {section.content_parts?.map((line, i) => (
-            <FadeContent key={i} duration={600} delay={400 + i * 100} fill={false}>
-              <p className="text-white text-lg md:text-xl leading-relaxed text-center">
-                {line}
-              </p>
-            </FadeContent>
+          {section.content?.map((item, i) => (
+            <div key={i} className="py-2">
+              {item.data && (
+                <Feature
+                  icon={item.data.icon}
+                  title={item.data.title}
+                  subtitle={item.data.description}
+                  layout="vertical"
+                  borderColor="#8b5cf6"
+                  borderSpeed={`${4 + i}s`}
+                />
+              )}
+            </div>
           ))}
         </div>
       </div>
@@ -91,15 +136,42 @@ const Presentation = ({ section, index, total }: { section: ScriptSection; index
 
   // Flow layout - steps/process (emoji on left, content on right)
   else if (layout === 'flow') {
+    const [visibleFlowItems, setVisibleFlowItems] = useState<number>(0);
+
+    useEffect(() => {
+      if (!section.content || section.content.length === 0) return;
+      
+      let currentIndex = 0;
+      setVisibleFlowItems(0);
+
+      const showNextItem = () => {
+        if (currentIndex < section.content!.length) {
+          setVisibleFlowItems(currentIndex + 1);
+          currentIndex++;
+          
+          if (currentIndex < section.content!.length) {
+            const delay = (section.content![currentIndex - 1].duration || 2) * 1000;
+            setTimeout(showNextItem, delay);
+          }
+        }
+      };
+
+      const initialTimer = setTimeout(showNextItem, 800);
+      
+      return () => {
+        clearTimeout(initialTimer);
+      };
+    }, [section.content]);
+
     content = (
       <div className="w-full h-full flex items-center relative px-12 pb-8">
         <div className="absolute top-6 right-6 text-gray-500 text-sm">
           {index + 1}/{total} 
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-6xl mx-auto items-center">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-6xl mx-auto items-start">
           <FadeContent duration={600}>
-            <div className="flex flex-col items-center justify-center">
+            <div className="flex flex-col items-center justify-center sticky top-1/3">
               <div className="text-9xl mb-6">{section.illustration}</div>
               {section.title && (
                 <h1 className="text-4xl md:text-5xl font-black text-white text-center">
@@ -110,14 +182,19 @@ const Presentation = ({ section, index, total }: { section: ScriptSection; index
           </FadeContent>
 
           <div className="space-y-5">
-            {section.content_parts?.map((line, i) => (
-              <FadeContent key={i} duration={600} delay={300 + i * 120} fill={false}>
-                <StarBorder as="div" color="#8b5cf6" speed={`${4 + i}s`} thickness={1}>
-                  <div className="px-6 py-4">
-                    <p className="text-white text-lg leading-relaxed">{line}</p>
-                  </div>
-                </StarBorder>
-              </FadeContent>
+            {section.content?.slice(0, visibleFlowItems).map((item, i) => (
+              <div key={i}>
+                {item.data && (
+                  <Feature
+                    icon={item.data.icon}
+                    title={item.data.title}
+                    subtitle={item.data.description}
+                    layout="horizontal"
+                    borderColor="#8b5cf6"
+                    borderSpeed={`${4 + i}s`}
+                  />
+                )}
+              </div>
             ))}
           </div>
         </div>
@@ -127,15 +204,44 @@ const Presentation = ({ section, index, total }: { section: ScriptSection; index
 
   // Keypoints layout - key points/bullets list
   else if (layout === 'keypoints') {
-    const getIcon = (index: number) => {
-      const icons = [CheckCircle2, Star, Zap, TrendingUp];
-      const Icon = icons[index % icons.length];
-      return <Icon className="w-6 h-6 flex-shrink-0" />;
+    const getBorderColor = (index: number) => {
+      return index % 3 === 0 ? "#10b981" : index % 3 === 1 ? "#3b82f6" : "#ec4899";
     };
 
-    const getIconColor = (index: number) => {
-      return index % 3 === 0 ? 'text-emerald-400' : index % 3 === 1 ? 'text-blue-400' : 'text-pink-400';
-    };
+    const [visibleItems, setVisibleItems] = useState<number>(0);
+
+    useEffect(() => {
+      if (!section.content || section.content.length === 0) return;
+      
+      let currentIndex = 0;
+      let timeoutId: NodeJS.Timeout;
+      setVisibleItems(0);
+
+      const showNextItem = () => {
+        if (currentIndex < section.content!.length) {
+          setVisibleItems(currentIndex + 1);
+          const currentItem = section.content![currentIndex];
+          currentIndex++;
+          
+          if (currentIndex < section.content!.length) {
+            // Calculate delay: duration - animation time
+            // FadeContent: 400ms, TextType: ~50ms per char (estimate 20 chars = 1000ms)
+            // Total animation time ≈ 400ms
+            const itemDuration = (currentItem.duration || 1) * 1000; // duration in ms
+            const animationTime = 400; // FadeContent duration only, TextType runs in parallel
+            const delay = Math.max(50, itemDuration - animationTime); // minimum 50ms delay
+            timeoutId = setTimeout(showNextItem, delay);
+          }
+        }
+      };
+
+      // Start immediately
+      timeoutId = setTimeout(showNextItem, 100);
+      
+      return () => {
+        if (timeoutId) clearTimeout(timeoutId);
+      };
+    }, [section.content]);
 
     content = (
       <div className="w-full h-full flex flex-col relative px-8 py-12">
@@ -159,22 +265,19 @@ const Presentation = ({ section, index, total }: { section: ScriptSection; index
         </div>
 
         <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 content-center">
-          {section.content_parts?.map((line, i) => (
-            <FadeContent key={i} duration={500} delay={100 + i * 80} fill={false}>
-              <StarBorder 
-                as="div" 
-                color={i % 3 === 0 ? "#10b981" : i % 3 === 1 ? "#3b82f6" : "#ec4899"} 
-                speed={`${3 + i * 0.3}s`} 
-                thickness={1}
-              >
-                <div className="h-full flex items-center gap-4 px-6 py-4">
-                  <div className={getIconColor(i)}>
-                    {getIcon(i)}
-                  </div>
-                  <p className="text-white text-base md:text-lg leading-relaxed">{line}</p>
-                </div>
-              </StarBorder>
-            </FadeContent>
+          {section.content?.slice(0, visibleItems).map((item, i) => (
+            <div key={i}>
+              {item.data && (
+                <Feature
+                  icon={item.data.icon}
+                  title={item.data.title}
+                  subtitle={item.data.description}
+                  layout="horizontal"
+                  borderColor={getBorderColor(i)}
+                  borderSpeed={`${3 + i * 0.3}s`}
+                />
+              )}
+            </div>
           ))}
         </div>
       </div>
@@ -183,6 +286,8 @@ const Presentation = ({ section, index, total }: { section: ScriptSection; index
 
   // MultiLine Type layout - cycling through lines with type and reverse animation
   else if (layout === 'multiline-type') {
+    const lines = section.content?.map(item => item.data?.title || '').filter(Boolean) || [];
+    
     content = (
       <div className="w-full h-full flex flex-col items-center justify-center relative px-8 pb-8">
         <div className="absolute top-6 right-6 text-gray-400 text-sm">
@@ -196,9 +301,9 @@ const Presentation = ({ section, index, total }: { section: ScriptSection; index
         )}
 
         <div className="w-full max-w-4xl">
-          {section.content_parts && section.content_parts.length > 0 && (
+          {lines.length > 0 && (
             <MultiLineTextType
-              lines={section.content_parts}
+              lines={lines}
               className="text-white text-2xl md:text-4xl font-bold text-center leading-relaxed"
               lineClassName="tracking-tight"
               typingSpeed={60}
@@ -219,8 +324,11 @@ const Presentation = ({ section, index, total }: { section: ScriptSection; index
 
   // Floating Lines layout - lines float up continuously and fade out
   else if (layout === 'floating-lines') {
+    const lines = section.content?.map(item => item.data?.title || '').filter(Boolean) || [];
+    const durations = section.content?.map(item => item.duration) || [];
+    
     content = (
-      <div className="w-full h-full flex flex-col items-center justify-center relative px-8 pb-8">
+      <div className="w-full h-full flex flex-col items-center justify-center relative px-8 pt-8 pb-8">
         <div className="absolute top-6 right-6 text-gray-400 text-sm">
           {index + 1}/{total} 
         </div>
@@ -239,19 +347,15 @@ const Presentation = ({ section, index, total }: { section: ScriptSection; index
           </FadeContent>
         )}
 
-        <div className="relative w-full max-w-4xl h-64 flex items-center justify-center">
-          {section.content_parts && section.content_parts.length > 0 && (
+        <div className="relative w-full max-w-6xl flex-1 flex items-center justify-center min-h-0">
+          {lines.length > 0 && (
             <FloatingLinesText
-              lines={section.content_parts}
-              className="w-full h-full"
-              lineClassName="text-white text-2xl md:text-3xl font-bold text-center px-8"
-              floatDuration={4}
+              lines={lines}
+              durations={durations}
+              className="w-full"
+              lineClassName="text-white text-xl md:text-2xl font-semibold text-center px-8"
               linePause={0.3}
               initialDelay={section.illustration ? 1 : 0.5}
-              startY={120}
-              endY={-200}
-              fadeOutStart={0.65}
-              ease="power2.out"
               startOnVisible={true}
             />
           )}

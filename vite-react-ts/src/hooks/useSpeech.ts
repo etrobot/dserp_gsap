@@ -6,6 +6,13 @@ export interface SpeechCallbacks {
   onError?: (error: string) => void;
 }
 
+export interface SpeechOptions {
+  lang?: string;
+  rate?: number;
+  pitch?: number;
+  volume?: number;
+}
+
 export const useSpeech = () => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
@@ -15,7 +22,8 @@ export const useSpeech = () => {
 
   const speak = useCallback(async (
     text: string,
-    callbacks?: SpeechCallbacks
+    callbacks?: SpeechCallbacks,
+    options?: SpeechOptions
   ) => {
     const synth = window.speechSynthesis;
     
@@ -26,9 +34,13 @@ export const useSpeech = () => {
 
     // Stop current speech if any
     if (synth.speaking) {
+      console.log('[useSpeech] Canceling previous speech');
       synth.cancel();
+      // Wait a bit for cancellation to complete
+      await new Promise(resolve => setTimeout(resolve, 50));
     }
 
+    console.log('[useSpeech] Starting speech:', text.substring(0, 50) + '...', 'lang:', options?.lang || 'zh-CN');
     setElapsedTime(0);
 
     const utterance = new SpeechSynthesisUtterance(text);
@@ -50,9 +62,11 @@ export const useSpeech = () => {
     };
 
     utterance.onend = () => {
+      console.log('[useSpeech] Speech ended');
       setIsSpeaking(false);
       if (timerRef.current) clearInterval(timerRef.current);
       callbacks?.onEnd?.();
+      console.log('[useSpeech] onEnd callback executed');
     };
 
     utterance.onerror = () => {
@@ -61,22 +75,37 @@ export const useSpeech = () => {
       callbacks?.onError?.('Speech synthesis error');
     };
 
-    // Set language to Chinese
-    utterance.lang = 'zh-CN';
-    utterance.rate = 1;
-    utterance.pitch = 1;
-    utterance.volume = 1;
+    // Set language
+    const lang = options?.lang || 'zh-CN';
+    utterance.lang = lang;
+    utterance.rate = options?.rate || 1;
+    utterance.pitch = options?.pitch || 1;
+    utterance.volume = options?.volume || 1;
 
-    // Select female voice
+    // Select appropriate voice based on language
     const voices = synth.getVoices();
-    const femaleVoice = voices.find(voice => 
-      voice.lang.startsWith('zh') && voice.name.toLowerCase().includes('female')
-    ) || voices.find(voice => 
-      voice.lang.startsWith('zh') && (voice.name.toLowerCase().includes('xiaoxiao') || voice.name.toLowerCase().includes('nami'))
-    ) || voices.find(voice => voice.lang.startsWith('zh'));
+    let selectedVoice = null;
     
-    if (femaleVoice) {
-      utterance.voice = femaleVoice;
+    if (lang.startsWith('zh')) {
+      // Chinese voice selection
+      selectedVoice = voices.find(voice => 
+        voice.lang.startsWith('zh') && voice.name.toLowerCase().includes('female')
+      ) || voices.find(voice => 
+        voice.lang.startsWith('zh') && (voice.name.toLowerCase().includes('xiaoxiao') || voice.name.toLowerCase().includes('nami'))
+      ) || voices.find(voice => voice.lang.startsWith('zh'));
+    } else if (lang.startsWith('en')) {
+      // English voice selection
+      selectedVoice = voices.find(voice => 
+        voice.lang.startsWith('en') && voice.name.toLowerCase().includes('female')
+      ) || voices.find(voice => voice.lang.startsWith('en'));
+    } else {
+      // Generic language matching
+      selectedVoice = voices.find(voice => voice.lang.startsWith(lang.substring(0, 2)));
+    }
+    
+    if (selectedVoice) {
+      utterance.voice = selectedVoice;
+      console.log('[useSpeech] Selected voice:', selectedVoice.name, selectedVoice.lang);
     }
 
     synth.speak(utterance);

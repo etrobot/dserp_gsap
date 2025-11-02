@@ -3,7 +3,7 @@ import TextType from '../TextType';
 import FadeContent from '../FadeContent';
 import StarBorder from '../StarBorder';
 
-interface TweetCardProps {
+interface TweetProps {
   avatar: string;
   name: string;
   date: string;
@@ -15,7 +15,7 @@ interface TweetCardProps {
   freeze?: boolean;
 }
 
-const TweetCard: React.FC<TweetCardProps> = ({
+const Tweet: React.FC<TweetProps> = ({
   avatar,
   name,
   date,
@@ -70,4 +70,4 @@ const TweetCard: React.FC<TweetCardProps> = ({
   );
 };
 
-export default TweetCard;
+export default Tweet;

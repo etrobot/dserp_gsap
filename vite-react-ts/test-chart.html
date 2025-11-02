@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECharts Test</title>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.6.0/dist/echarts.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background-color: #1a1a1a;
+      color: white;
+    }
+    .chart-container {
+      width: 100%;
+      height: 500px;
+      background: white;
+      margin: 20px 0;
+      border-radius: 8px;
+    }
+    h2 {
+      color: #fff;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <h1>测试 ysjfTagInsightScript.json 的图表配置</h1>
+
+  <h2>图表1：各标签类型的出现次数与平均点赞量</h2>
+  <div id="chart1" class="chart-container"></div>
+
+  <h2>图表2：各标签类型点赞量占比分析</h2>
+  <div id="chart2" class="chart-container"></div>
+
+  <script>
+    // 读取JSON文件
+    fetch('/scripts/ysjfTagInsightScript.json')
+      .then(response => response.json())
+      .then(data => {
+        console.log('Script data loaded:', data);
+        
+        // 找到图表配置
+        const chartSections = data.sections.filter(section => 
+          section.layout === 'chart' && section.chartType === 'echarts'
+        );
+        
+        console.log('Found chart sections:', chartSections);
+        
+        // 渲染第一个图表
+        if (chartSections[0]) {
+          const chart1 = echarts.init(document.getElementById('chart1'));
+          chart1.setOption(chartSections[0].chartConfig);
+          console.log('Chart 1 rendered with config:', chartSections[0].chartConfig);
+        }
+        
+        // 渲染第二个图表
+        if (chartSections[1]) {
+          const chart2 = echarts.init(document.getElementById('chart2'));
+          chart2.setOption(chartSections[1].chartConfig);
+          console.log('Chart 2 rendered with config:', chartSections[1].chartConfig);
+        }
+      })
+      .catch(error => {
+        console.error('Error loading script:', error);
+        document.body.innerHTML += '<p style="color: red;">加载失败: ' + error.message + '</p>';
+      });
+  </script>
+</body>
+</html>

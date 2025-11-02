@@ -3,10 +3,10 @@ import TextType from '../TextType';
 import FadeContent from '../FadeContent';
 import StarBorder from '../StarBorder';
 
-interface FeatureCellProps {
+interface FeatureProps {
   icon?: React.ReactNode | string;
-  title: string;
-  subtitle: string;
+  title?: string;
+  subtitle?: string;
   layout?: 'vertical' | 'horizontal';
   className?: string;
   borderColor?: string;
@@ -15,7 +15,7 @@ interface FeatureCellProps {
   freeze?: boolean;
 }
 
-const FeatureCell: React.FC<FeatureCellProps> = ({
+const Feature: React.FC<FeatureProps> = ({
   icon,
   title,
   subtitle,
@@ -28,7 +28,7 @@ const FeatureCell: React.FC<FeatureCellProps> = ({
 }) => {
 
   return (
-    <FadeContent duration={800} delay={300} freeze={freeze}>
+    <FadeContent duration={400} delay={0} freeze={freeze}>
       <StarBorder
         as="div"
         className={className}
@@ -54,19 +54,21 @@ const FeatureCell: React.FC<FeatureCellProps> = ({
           )}
 
           <div className={`flex flex-col ${layout === 'vertical' ? 'items-center text-center' : 'flex-1 items-start text-left'} gap-2`}>
-            <TextType
-              text={title}
-              as="h3"
-              className="text-xl font-bold text-white"
-              showCursor={false}
-              typingSpeed={50}
-              loop={false}
-              startOnVisible={true}
-            />
+            {title && (
+              <TextType
+                text={title}
+                as="h3"
+                className="text-xl font-bold text-white"
+                showCursor={false}
+                typingSpeed={50}
+                loop={false}
+                startOnVisible={true}
+              />
+            )}
 
-
-            <p className="text-gray-400 text-sm leading-relaxed">{subtitle}</p>
-
+            {subtitle && (
+              <p className="text-gray-400 text-sm leading-relaxed">{subtitle}</p>
+            )}
           </div>
         </div>
       </StarBorder>
@@ -74,4 +76,4 @@ const FeatureCell: React.FC<FeatureCellProps> = ({
   );
 };
 
-export default FeatureCell;
+export default Feature;
