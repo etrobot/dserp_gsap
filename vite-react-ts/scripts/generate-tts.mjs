@@ -3,21 +3,43 @@
  * TTS 批量生成脚本
  * 使用 Azure TTS 为 read_srt 生成语音文件
  * 
- * 环境变量：
- *   SPEECH_KEY: Azure Speech Service key
- *   SPEECH_REGION: Azure Speech Service region
+ * 环境变量（来自 .env）:
+ *   VITE_AZURE_SPEECH_KEY: Azure Speech Service key
+ *   VITE_AZURE_SPEECH_REGION: Azure Speech Service region
  * 
  * 运行:
- *   node scripts/generate-tts.mjs [scriptName]
+ *   npm run tts [scriptName]
  * 
  * 示例:
- *   node scripts/generate-tts.mjs ysjfTagInsightScript
+ *   npm run tts ysjfTagInsightScript
  */
 
 import { promises as fs } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { synthesizeSpeech } from '../src/utils/tts.js';
+
+// 手动加载 .env 文件
+async function loadEnv() {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  const envPath = path.join(__dirname, '../.env');
+  
+  try {
+    const envContent = await fs.readFile(envPath, 'utf-8');
+    envContent.split('\n').forEach(line => {
+      const trimmed = line.trim();
+      if (trimmed && !trimmed.startsWith('#')) {
+        const [key, value] = trimmed.split('=');
+        if (key && value) {
+          process.env[key.trim()] = value.trim();
+        }
+      }
+    });
+  } catch (err) {
+    console.warn('⚠️  无法读取 .env 文件，将使用现有环境变量');
+  }
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -134,15 +156,28 @@ async function updateScriptConfig(scriptConfig, audioMap) {
 }
 
 async function generate() {
+  // 加载 .env 文件
+  await loadEnv();
+  
   console.log('🎤 TTS 批量生成脚本');
   console.log(`📝 脚本: ${scriptName}`);
   console.log(`🎵 声音: ${CONFIG.voice}`);
   
-  // 检查环境变量
-  if (!process.env.SPEECH_KEY || !process.env.SPEECH_REGION) {
-    console.error('❌ 错误: 缺少环境变量 SPEECH_KEY 或 SPEECH_REGION');
+  // 检查环境变量（支持 VITE_ 前缀和不带前缀两种）
+  const speechKey = process.env.VITE_AZURE_SPEECH_KEY || process.env.SPEECH_KEY;
+  const speechRegion = process.env.VITE_AZURE_SPEECH_REGION || process.env.SPEECH_REGION;
+  
+  if (!speechKey || !speechRegion) {
+    console.error('❌ 错误: 缺少环境变量');
+    console.error('   请在 .env 中配置:');
+    console.error('   VITE_AZURE_SPEECH_KEY=xxx');
+    console.error('   VITE_AZURE_SPEECH_REGION=xxx');
     process.exit(1);
   }
+  
+  // 设置到 process.env 供后续使用
+  process.env.SPEECH_KEY = speechKey;
+  process.env.SPEECH_REGION = speechRegion;
   
   // 确保输出目录存在
   await fs.mkdir(CONFIG.outputDir, { recursive: true });

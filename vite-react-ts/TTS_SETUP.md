@@ -11,11 +11,13 @@
 ## 前置要求
 
 ### 1. Azure 认证信息
-需要设置环境变量：
-```bash
-export SPEECH_KEY=your_azure_speech_key
-export SPEECH_REGION=your_region  # e.g., eastus
+需要在 `.env` 文件中配置（已从 `.env.example` 创建）：
 ```
+VITE_AZURE_SPEECH_KEY=your_azure_speech_key
+VITE_AZURE_SPEECH_REGION=eastasia
+```
+
+生成脚本会自动读取 `.env` 文件中的这些变量。
 
 ### 2. 检查依赖
 ```bash
@@ -118,14 +120,22 @@ npm run tts ysjfTagInsightScript
 
 ### 问题 1: 环境变量未设置
 ```
-❌ 错误: 缺少环境变量 SPEECH_KEY 或 SPEECH_REGION
+❌ 错误: 缺少环境变量
+   请在 .env 中配置:
+   VITE_AZURE_SPEECH_KEY=xxx
+   VITE_AZURE_SPEECH_REGION=xxx
 ```
 
 **解决方案：**
+编辑 `.env` 文件：
+```
+VITE_AZURE_SPEECH_KEY=your_key
+VITE_AZURE_SPEECH_REGION=eastasia
+```
+
+然后运行：
 ```bash
-export SPEECH_KEY=xxx
-export SPEECH_REGION=eastus
-npm run tts
+npm run tts ysjfTagInsightScript
 ```
 
 ### 问题 2: 音频文件没有生成
