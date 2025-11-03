@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { ScriptSpec } from '@/content/xlinDataInsghtScript';
+import type { ScriptSpec } from '@/types/scriptTypes';
 
 export const useScriptData = (scriptPath: string) => {
   const [data, setData] = useState<ScriptSpec | null>(null);

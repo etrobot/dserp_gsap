@@ -11,8 +11,7 @@
 ```json
 {
   "title": "演示文稿标题",
-  "language": "zh-CN",              // 默认语言（必填）
-  "languages": ["zh-CN", "en-US"],  // 支持的语言列表（可选，用于批量录制）
+  "language": "zh-CN",  // 默认语言（必填）
   "sections": [
     // ... 内容
   ]
@@ -43,13 +42,13 @@ npm run record ysjfTagInsightScript en-US
 
 **批量录制：**
 ```bash
-# 自动读取 languages 字段，为每种语言录制一次
+# 自动读取每个脚本的 language 字段进行录制
 ./batch-record.sh
 ```
 
 ## 示例场景
 
-### 场景 1: 中文单语脚本
+### 场景 1: 中文脚本
 
 ```json
 {
@@ -61,48 +60,33 @@ npm run record ysjfTagInsightScript en-US
 
 **效果：**
 - 浏览器打开自动显示中文
-- 批量录制只生成 1 个视频（zh-CN）
+- 批量录制生成 1 个中文视频
+- 用户可以手动切换到其他语言查看
 
-### 场景 2: 中英双语脚本
-
-```json
-{
-  "title": "产品演示",
-  "language": "zh-CN",
-  "languages": ["zh-CN", "en-US"],
-  "sections": [...]
-}
-```
-
-**效果：**
-- 浏览器打开默认显示中文
-- 批量录制生成 2 个视频（zh-CN, en-US）
-
-### 场景 3: 多语言国际化脚本
+### 场景 2: 英文脚本
 
 ```json
 {
-  "title": "产品演示",
+  "title": "Product Demo",
   "language": "en-US",
-  "languages": ["zh-CN", "en-US", "ja-JP", "ko-KR", "es-ES"],
   "sections": [...]
 }
 ```
 
 **效果：**
 - 浏览器打开默认显示英文
-- 批量录制生成 5 个视频（覆盖主要市场）
+- 批量录制生成 1 个英文视频
+- 用户可以手动切换到其他语言查看
 
 ## 代码实现
 
 ### 类型定义
 
 ```typescript
-// src/content/xlinDataInsghtScript.ts
+// src/types/scriptTypes.ts
 export type ScriptSpec = {
   title: string;
-  language?: string;      // 默认语言
-  languages?: string[];   // 支持的语言列表
+  language?: string;  // 默认语言
   sections: ScriptSection[];
 };
 ```
@@ -154,20 +138,16 @@ const Player: React.FC<PlayerProps> = ({
 ## 最佳实践
 
 1. **总是设置 `language` 字段**
-   - 即使只支持一种语言，也要明确指定
+   - 即使只使用一种语言，也要明确指定
    - 避免依赖默认值 `'zh-CN'`
 
-2. **合理使用 `languages` 数组**
-   - 只包含真正需要的语言
-   - 每增加一种语言，批量录制时间会翻倍
+2. **一个脚本一种语言**
+   - 每个脚本 JSON 文件只对应一种语言
+   - 如需多语言版本，创建独立的脚本文件（如 `script-en.json`, `script-zh.json`）
 
-3. **语言顺序**
-   - `languages` 数组中第一个语言通常是主要语言
-   - 建议与 `language` 字段保持一致
-
-4. **国际化内容**
-   - 确保 `read_srt` 字段的内容适合所选语言
-   - 或者考虑为不同语言创建不同的脚本文件
+3. **国际化内容**
+   - 确保 `read_srt` 字段的内容与 `language` 字段匹配
+   - 为不同语言创建独立的脚本文件，而不是在一个文件中混合多种语言
 
 ## 故障排除
 
@@ -179,9 +159,9 @@ const Player: React.FC<PlayerProps> = ({
 
 ### 问题：批量录制使用了错误的语言
 
-**原因：** JSON 文件格式错误或 `languages` 字段缺失
+**原因：** JSON 文件格式错误或 `language` 字段缺失
 
-**解决：** 验证 JSON 格式，确保 `languages` 是字符串数组
+**解决：** 验证 JSON 格式，确保 `language` 字段正确设置
 
 ### 问题：TTS 语音不匹配选择的语言
 

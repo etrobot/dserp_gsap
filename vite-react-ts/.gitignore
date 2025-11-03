@@ -27,3 +27,4 @@ dist-ssr
 recordings/
 *.webm
 *.mp4
+.env

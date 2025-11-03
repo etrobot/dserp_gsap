@@ -4,10 +4,9 @@ import FadeContent from '../FadeContent';
 import StarBorder from '../StarBorder';
 
 interface TweetProps {
-  avatar: string;
-  name: string;
-  date: string;
-  content: string;
+  icon?: string;
+  title?: string;
+  data?: string;
   className?: string;
   borderColor?: string;
   borderSpeed?: string;
@@ -16,56 +15,60 @@ interface TweetProps {
 }
 
 const Tweet: React.FC<TweetProps> = ({
-  avatar,
-  name,
-  date,
-  content,
+  icon,
+  title,
+  data,
   className = '',
   borderColor = 'white',
   borderSpeed = '6s',
-  borderThickness = 1,
+  borderThickness = 3,
   freeze = false
 }) => {
   
   return (
     <FadeContent duration={800} delay={300} freeze={freeze}>
-    <StarBorder
-      as="div"
-      className={className}
-      color={borderColor}
-      speed={borderSpeed}
-      thickness={borderThickness}
-      freeze={freeze}
-    >
-      <div className="flex flex-col gap-3 text-left">
-        <div className="flex items-start gap-3">
-            <img
-              src={avatar}
-              alt={name}
-              className="w-12 h-12 rounded-full object-cover"
-            />
+      <StarBorder
+        as="div"
+        className={className}
+        color={borderColor}
+        speed={borderSpeed}
+        thickness={borderThickness}
+        freeze={freeze}
+      >
+        <div 
+          className="flex items-start gap-8 text-left backdrop-blur-md bg-white/10"
+          style={{
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+          }}
+        >
+          {/* Left Column: Icon */}
+          {icon && (
+            <div className="flex items-center justify-center w-24 flex-shrink-0">
+              <div className="text-7xl">{icon}</div>
+            </div>
+          )}
           
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
+          {/* Right Column: Text Content */}
+          <div className="flex-1 min-w-0 flex flex-col gap-4">
+            {title && (
               <TextType
-                text={name}
-                as="span"
-                className="font-bold text-white"
+                text={title}
+                as="h3"
+                className="text-3xl font-bold text-white leading-tight"
                 showCursor={false}
                 typingSpeed={50}
                 loop={false}
                 startOnVisible={true}
               />
-            </div>
+            )}
             
-            <div className="text-gray-400 text-sm">{date}</div>
+            {data && (
+              <p className="text-gray-200 text-xl leading-relaxed whitespace-pre-wrap">{data}</p>
+            )}
           </div>
         </div>
-        
-          <p className="text-white leading-relaxed">{content}</p>
-
-      </div>
-    </StarBorder>
+      </StarBorder>
     </FadeContent>
   );
 };

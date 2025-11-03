@@ -60,41 +60,74 @@ const FloatingLinesText = ({
     }
 
     const nextIndex = visibleLines.length;
-    const delay = nextIndex === 0 ? initialDelay : linePause;
+    let delay: number;
+    
+    if (nextIndex === 0) {
+      // First line uses initialDelay
+      delay = initialDelay;
+    } else {
+      // Use duration from previous line, or fall back to linePause
+      const prevLineDuration = durations && durations[nextIndex - 1];
+      delay = prevLineDuration !== undefined ? prevLineDuration : linePause;
+    }
 
     const timer = setTimeout(() => {
       setVisibleLines(prev => [...prev, nextIndex]);
-      
-      // Animate the new line
-      const lineElement = lineRefs.current[nextIndex];
-      if (lineElement) {
-        gsap.fromTo(
-          lineElement,
-          { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }
-        );
-      }
     }, delay * 1000);
 
     return () => clearTimeout(timer);
   }, [isVisible, visibleLines, lines.length, durations, linePause, initialDelay, onComplete]);
 
+  // Animate newly visible lines
+  useEffect(() => {
+    if (visibleLines.length === 0) return;
+    
+    const lastIndex = visibleLines[visibleLines.length - 1];
+    const newLineElement = lineRefs.current[lastIndex];
+    
+    // Animate all existing lines moving up
+    const allVisibleElements = visibleLines.map(i => lineRefs.current[i]).filter(Boolean);
+    
+    if (allVisibleElements.length > 0) {
+      // Move all existing lines up
+      allVisibleElements.forEach((el, idx) => {
+        if (el && idx < allVisibleElements.length - 1) {
+          gsap.to(el, {
+            y: '-=36', // Move up by gap-2 (8px) + text height estimate
+            duration: 0.4,
+            ease: 'power2.out'
+          });
+        }
+      });
+      
+      // Fade in the new line from bottom
+      if (newLineElement) {
+        gsap.fromTo(
+          newLineElement,
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }
+        );
+      }
+    }
+  }, [visibleLines]);
+
   return (
     <div ref={containerRef} className={`flex flex-col items-center justify-center ${className}`}>
-      <div className="flex flex-col gap-4 items-center">
-        {lines.map((line, index) => (
-          <div
-            key={index}
-            ref={el => { lineRefs.current[index] = el; }}
-            className={`whitespace-pre-wrap ${lineClassName}`}
-            style={{
-              opacity: visibleLines.includes(index) ? 1 : 0,
-              willChange: 'transform, opacity',
-            }}
-          >
-            {line}
-          </div>
-        ))}
+      <div className="flex flex-col gap-1 items-center justify-center">
+        {lines.map((line, index) => 
+          visibleLines.includes(index) ? (
+            <div
+              key={index}
+              ref={el => { lineRefs.current[index] = el; }}
+              className={`whitespace-pre-wrap ${lineClassName}`}
+              style={{
+                willChange: 'transform, opacity',
+              }}
+            >
+              {line}
+            </div>
+          ) : null
+        )}
       </div>
     </div>
   );

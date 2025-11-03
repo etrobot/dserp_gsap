@@ -2,8 +2,7 @@
 # 批量录制所有演示文稿脚本
 # 使用方法: ./batch-record.sh
 # 
-# 会自动读取每个脚本 JSON 中的 languages 字段
-# 如果没有 languages 字段，使用 language 字段（默认语言）
+# 会自动读取每个脚本 JSON 中的 language 字段（默认语言）
 
 echo "🎬 开始批量录制..."
 
@@ -12,13 +11,13 @@ scripts=(
   "ysjfTagInsightScript"
 )
 
-# 读取 JSON 中的语言配置并录制
-get_languages() {
+# 读取 JSON 中的语言配置
+get_language() {
   local script_file="public/scripts/$1.json"
   if [ -f "$script_file" ]; then
-    # 尝试读取 languages 数组
-    local langs=$(node -e "const fs=require('fs');const d=JSON.parse(fs.readFileSync('$script_file'));console.log((d.languages||[d.language||'zh-CN']).join(' '))")
-    echo "$langs"
+    # 读取 language 字段
+    local lang=$(node -e "const fs=require('fs');const d=JSON.parse(fs.readFileSync('$script_file'));console.log(d.language||'zh-CN')")
+    echo "$lang"
   else
     echo "zh-CN"
   fi
@@ -26,27 +25,25 @@ get_languages() {
 
 # 循环录制
 for script in "${scripts[@]}"; do
-  languages=$(get_languages "$script")
+  lang=$(get_language "$script")
   
-  for lang in $languages; do
-    echo ""
-    echo "=================================="
-    echo "📝 录制: $script"
-    echo "🌐 语言: $lang"
-    echo "=================================="
-    
-    npm run record "$script" "$lang"
-    
-    # 检查是否成功
-    if [ $? -eq 0 ]; then
-      echo "✅ $script ($lang) 录制完成"
-    else
-      echo "❌ $script ($lang) 录制失败"
-    fi
-    
-    # 等待 2 秒再继续下一个
-    sleep 2
-  done
+  echo ""
+  echo "=================================="
+  echo "📝 录制: $script"
+  echo "🌐 语言: $lang"
+  echo "=================================="
+  
+  npm run record "$script" "$lang"
+  
+  # 检查是否成功
+  if [ $? -eq 0 ]; then
+    echo "✅ $script ($lang) 录制完成"
+  else
+    echo "❌ $script ($lang) 录制失败"
+  fi
+  
+  # 等待 2 秒再继续下一个
+  sleep 2
 done
 
 echo ""

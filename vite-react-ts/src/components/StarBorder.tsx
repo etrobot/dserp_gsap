@@ -21,6 +21,18 @@ const StarBorder = <T extends React.ElementType = 'button'>({
   ...rest
 }: StarBorderProps<T>) => {
   const Component = as || 'button';
+  const lightLengthPercent = 27;
+  const lightLength = `${lightLengthPercent}%`;
+  const blurRadius = 2;
+  const glowRadius = 6;
+  const sharedLightStyles = {
+    opacity: 0,
+    filter: `blur(${blurRadius}px)`,
+    boxShadow: `0 0 ${glowRadius}px ${color}`,
+    animationDuration: freeze ? undefined : speed,
+    animationFillMode: freeze ? undefined : 'both',
+    ['--border-light-length' as const]: lightLength,
+  } as React.CSSProperties;
 
   return (
     <Component
@@ -31,32 +43,83 @@ const StarBorder = <T extends React.ElementType = 'button'>({
         ...(rest as any).style
       }}
     >
-      {/* Border mask layer */}
+      {/* Static border */}
       <div 
-        className="absolute inset-0 rounded-[20px] overflow-hidden pointer-events-none"
+        className="absolute inset-0 rounded-[20px] pointer-events-none"
         style={{
-          WebkitMaskImage: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
-          WebkitMaskComposite: 'xor',
-          maskImage: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
-          maskComposite: 'exclude',
-          padding: `${thickness}px`,
+          border: `${thickness}px solid rgba(100, 100, 100, 0.3)`,
         }}
-      >
-        {/* Clockwise star animation */}
+      />
+      
+      {/* Border container */}
+      <div className="absolute inset-0 pointer-events-none rounded-[20px]">
+        {/* Top border light */}
         <div
-          className="absolute w-[200px] h-[200px] rounded-full blur-[20px]"
+          className={`absolute ${freeze ? '' : 'animate-border-top'}`}
           style={{
-            background: `radial-gradient(circle, ${color}, transparent 50%)`,
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            animation: freeze ? 'none' : `star-movement-clockwise ${speed} linear infinite`,
+            top: 0,
+            left: 0,
+            width: lightLength,
+            height: `${thickness}px`,
+            background: `linear-gradient(90deg, transparent 0%, ${color} 50%, transparent 100%)`,
+            ...sharedLightStyles,
+          }}
+        />
+        
+        {/* Right border light */}
+        <div
+          className={`absolute ${freeze ? '' : 'animate-border-right'}`}
+          style={{
+            right: 0,
+            top: 0,
+            height: lightLength,
+            width: `${thickness}px`,
+            background: `linear-gradient(180deg, transparent 0%, ${color} 50%, transparent 100%)`,
+            animationDelay: `calc(${speed} * 0.25)`,
+            ...sharedLightStyles,
+          }}
+        />
+        
+        {/* Bottom border light */}
+        <div
+          className={`absolute ${freeze ? '' : 'animate-border-bottom'}`}
+          style={{
+            bottom: 0,
+            left: 0,
+            width: lightLength,
+            height: `${thickness}px`,
+            background: `linear-gradient(270deg, transparent 0%, ${color} 50%, transparent 100%)`,
+            animationDelay: `calc(${speed} * 0.5)`,
+            ...sharedLightStyles,
+          }}
+        />
+        
+        {/* Left border light */}
+        <div
+          className={`absolute ${freeze ? '' : 'animate-border-left'}`}
+          style={{
+            left: 0,
+            top: 0,
+            height: lightLength,
+            width: `${thickness}px`,
+            background: `linear-gradient(0deg, transparent 0%, ${color} 50%, transparent 100%)`,
+            animationDelay: `calc(${speed} * 0.75)`,
+            ...sharedLightStyles,
           }}
         />
       </div>
       
       {/* Content */}
-      <div className="relative z-10 bg-gradient-to-b from-black to-gray-900 text-white text-center text-[16px] py-[16px] px-[26px] rounded-[20px]">
+      <div 
+        className="relative z-10 text-white text-[16px] py-[16px] px-[26px]"
+        style={{
+          width: '100%',
+          height: '100%',
+          background: 'rgba(0, 0, 0, 0.52)',
+          boxSizing: 'border-box',
+          borderRadius: `calc(20px - ${thickness}px)`,
+        }}
+      >
         {children}
       </div>
     </Component>

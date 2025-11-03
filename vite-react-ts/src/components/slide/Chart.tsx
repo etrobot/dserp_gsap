@@ -2,21 +2,23 @@ import React, { useMemo } from 'react';
 import ReactECharts from 'echarts-for-react';
 import FadeContent from '../FadeContent';
 
-interface GenericEChartProps {
+interface ChartProps {
   config: any;
   freeze?: boolean;
   className?: string;
 }
 
-const GenericEChart: React.FC<GenericEChartProps> = ({ 
+const Chart: React.FC<ChartProps> = ({ 
   config, 
   freeze = false,
   className = ''
 }) => {
   if (!config) {
-    console.error('GenericEChart: config is undefined');
+    console.error('Chart: config is undefined');
     return <div className="text-white">Chart config is missing</div>;
   }
+
+  const baseFontSize = 20;
 
   // Merge user config with default dark theme styles
   const mergedConfig = useMemo(() => {
@@ -24,19 +26,22 @@ const GenericEChart: React.FC<GenericEChartProps> = ({
       backgroundColor: 'transparent',
       textStyle: {
         fontFamily: 'Microsoft YaHei, SimHei, sans-serif',
-        color: '#fff'
+        color: '#fff',
+        fontSize: baseFontSize
       },
       tooltip: {
         trigger: config.series?.[0]?.type === 'pie' ? 'item' : 'axis',
         backgroundColor: 'rgba(0, 0, 0, 0.8)',
         borderColor: '#666',
         textStyle: {
-          color: '#fff'
+          color: '#fff',
+          fontSize: baseFontSize
         }
       },
       legend: {
         textStyle: {
-          color: '#fff'
+          color: '#fff',
+          fontSize: baseFontSize
         },
         bottom: 20
       },
@@ -65,27 +70,34 @@ const GenericEChart: React.FC<GenericEChartProps> = ({
 
     // Apply dark theme styles to axes if they exist
     if (merged.xAxis) {
-      merged.xAxis = {
-        ...merged.xAxis,
+      const applyXAxisStyles = (axis: any) => ({
+        ...axis,
         axisLabel: {
-          ...merged.xAxis.axisLabel,
-          color: '#fff'
+          ...axis?.axisLabel,
+          color: '#fff',
+          fontSize: baseFontSize
         },
         axisLine: {
           lineStyle: { color: '#666' }
         }
-      };
+      });
+
+      merged.xAxis = Array.isArray(merged.xAxis)
+        ? merged.xAxis.map(applyXAxisStyles)
+        : applyXAxisStyles(merged.xAxis);
     }
 
     if (merged.yAxis) {
       const applyYAxisStyles = (axis: any) => ({
         ...axis,
         nameTextStyle: {
-          color: '#fff'
+          color: '#fff',
+          fontSize: baseFontSize
         },
         axisLabel: {
-          ...axis.axisLabel,
-          color: '#fff'
+          ...axis?.axisLabel,
+          color: '#fff',
+          fontSize: baseFontSize
         },
         axisLine: {
           lineStyle: { color: '#666' }
@@ -134,4 +146,4 @@ const GenericEChart: React.FC<GenericEChartProps> = ({
   );
 };
 
-export default GenericEChart;
+export default Chart;

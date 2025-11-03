@@ -85,7 +85,7 @@ const CONFIG = {
 
 ```bash
 #!/bin/bash
-# batch-record.sh
+# batch-record.sh - 自动读取每个脚本的 language 字段进行录制
 
 scripts=(
   "ysjfTagInsightScript"
@@ -93,13 +93,12 @@ scripts=(
   "xlinDataInsghtScript"
 )
 
-languages=("zh-CN" "en-US")
-
 for script in "${scripts[@]}"; do
-  for lang in "${languages[@]}"; do
-    echo "录制: $script ($lang)"
-    npm run record "$script" "$lang"
-  done
+  # 自动从 JSON 中读取 language 字段
+  lang=$(node -e "const fs=require('fs');const d=JSON.parse(fs.readFileSync('public/scripts/${script}.json'));console.log(d.language||'zh-CN')")
+  
+  echo "录制: $script ($lang)"
+  npm run record "$script" "$lang"
 done
 ```
 
