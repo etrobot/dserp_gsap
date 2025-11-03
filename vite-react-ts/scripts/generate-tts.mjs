@@ -44,14 +44,15 @@ async function loadEnv() {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// 配置
-const CONFIG = {
-  outputDir: path.join(__dirname, '../public/tts'),
-  voice: 'zh-TW-YunJheNeural', // 繁體中文聲音
-};
-
 // 解析命令行参数
 const scriptName = process.argv[2] || 'ysjfTagInsightScript';
+
+// 配置
+const CONFIG = {
+  outputDir: path.join(__dirname, '../public/tts', scriptName),
+  voice: 'zh-TW-YunJheNeural', // 繁體中文聲音
+  scriptName,
+};
 
 // 从 JSON 文件读取脚本配置
 async function loadScriptConfig(scriptName) {
@@ -90,20 +91,37 @@ function getAudioDuration(buffer) {
 // 提取所有需要合成的文本
 function extractReadSrtItems(sections) {
   const items = [];
-  const seen = new Set();
+  const textToFile = new Map(); // 相同文本只生成一次
   
   for (const section of sections) {
     if (!section.content) continue;
     
-    for (const item of section.content) {
+    for (let contentIndex = 0; contentIndex < section.content.length; contentIndex++) {
+      const item = section.content[contentIndex];
       const text = item.read_srt?.trim();
-      if (text && !seen.has(text)) {
-        seen.add(text);
-        items.push({
-          text,
-          sectionId: section.id,
-          itemIndex: items.length,
-        });
+      
+      if (text) {
+        // 生成文件名：section-id-索引
+        const filename = `${section.id}-${String(contentIndex + 1).padStart(2, '0')}.wav`;
+        
+        // 如果这个文本之前没生成过，则生成
+        if (!textToFile.has(text)) {
+          textToFile.set(text, filename);
+          items.push({
+            text,
+            sectionId: section.id,
+            contentIndex,
+            filename,
+          });
+        } else {
+          // 相同文本，记录映射关系
+          items.push({
+            text,
+            sectionId: section.id,
+            contentIndex,
+            filename: textToFile.get(text), // 使用之前生成的文件
+          });
+        }
       }
     }
   }
@@ -112,16 +130,14 @@ function extractReadSrtItems(sections) {
 }
 
 // 合成语音并保存文件
-async function synthesizeAndSave(text, index, total) {
-  console.log(`[${index}/${total}] 合成: "${text.substring(0, 50)}${text.length > 50 ? '...' : ''}"`);
+async function synthesizeAndSave(text, filename, index, total) {
+  console.log(`[${index}/${total}] 合成 [${filename}]: "${text.substring(0, 50)}${text.length > 50 ? '...' : ''}"`);
   
   try {
     const audioBuffer = await synthesizeSpeech(text, CONFIG.voice);
     const duration = getAudioDuration(audioBuffer);
     
-    const filename = `tts_${String(index).padStart(4, '0')}.wav`;
     const filepath = path.join(CONFIG.outputDir, filename);
-    
     await fs.writeFile(filepath, audioBuffer);
     
     console.log(`✅ 保存: ${filename} (${duration.toFixed(2)}s)`);
@@ -133,7 +149,7 @@ async function synthesizeAndSave(text, index, total) {
   }
 }
 
-// 更新 JSON 中的 duration 和添加音频文件引用
+// 更新 JSON 中的 duration（audioFile 由文件名规则动态生成，无需存储）
 async function updateScriptConfig(scriptConfig, audioMap) {
   let updateCount = 0;
   
@@ -145,13 +161,16 @@ async function updateScriptConfig(scriptConfig, audioMap) {
       if (text && audioMap.has(text)) {
         const audioInfo = audioMap.get(text);
         item.duration = audioInfo.duration;
-        item.audioFile = audioInfo.filename;
+        // 移除旧的 audioFile 字段（如果存在）
+        if ('audioFile' in item) {
+          delete item.audioFile;
+        }
         updateCount++;
       }
     }
   }
   
-  console.log(`\n✅ 更新了 ${updateCount} 项的 duration 和音频文件引用`);
+  console.log(`\n✅ 更新了 ${updateCount} 项的 duration`);
   return scriptConfig;
 }
 
@@ -208,12 +227,19 @@ async function generate() {
     process.exit(1);
   }
   
-  // 合成所有文本
+  // 合成所有文本（去重：只合成新文本）
   const audioMap = new Map();
+  const synthesizedTexts = new Set();
+  
   for (let i = 0; i < readSrtItems.length; i++) {
     const item = readSrtItems[i];
-    const audioInfo = await synthesizeAndSave(item.text, i + 1, readSrtItems.length);
-    audioMap.set(item.text, audioInfo);
+    
+    // 只合成没有合成过的文本
+    if (!synthesizedTexts.has(item.text)) {
+      synthesizedTexts.add(item.text);
+      const audioInfo = await synthesizeAndSave(item.text, item.filename, i + 1, readSrtItems.length);
+      audioMap.set(item.text, audioInfo);
+    }
   }
   
   console.log(`\n🔄 更新脚本配置文件...`);

@@ -17,7 +17,7 @@ function App() {
     const pagesArr = [] as ReactNode[]
     const subtitleArr = [] as string[]
     const layoutsArr = [] as string[]
-    const audioDataArr: Array<{ audioFile?: string; duration?: number }> = []
+    const audioDataArr: Array<{ sectionId: string; contentIndex: number; duration?: number }> = []
 
     for (let i = 0; i < scriptData.sections.length; i++) {
       const section = scriptData.sections[i]
@@ -40,11 +40,12 @@ function App() {
       // Extract layout type
       layoutsArr.push(section.layout || '')
       
-      // Extract audio data from first content item if available
-      const firstContent = section.content?.[0]
+      // Extract audio data from first content item: use section id and content index (0-based)
+      // File will be: /tts/scriptName/section-id-01.wav
       audioDataArr.push({
-        audioFile: firstContent?.audioFile,
-        duration: firstContent?.duration,
+        sectionId: section.id,
+        contentIndex: 0, // 第一个内容
+        duration: section.content?.[0]?.duration,
       })
     }
 
@@ -79,6 +80,7 @@ function App() {
       currentScript={selectedFile}
       onScriptChange={setSelectedFile}
       defaultLanguage={scriptData?.language || 'zh-CN'}
+      scriptName={selectedFile?.replace('.json', '') || ''}
     />
   )
 }

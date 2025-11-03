@@ -7,7 +7,8 @@ import Hyperspeed from '@/components/background/highspeed';
 import Squares from '@/components/background/squares';
 
 interface PageAudioData {
-  audioFile?: string;
+  sectionId: string;
+  contentIndex: number;
   duration?: number;
 }
 
@@ -21,6 +22,7 @@ interface PlayerProps {
   pageLayouts?: string[];
   defaultLanguage?: string; // 从 JSON 读取的默认语言
   pageAudioData?: PageAudioData[]; // 每页的音频数据
+  scriptName?: string; // 脚本名称，用于构建音频路径
 }
 
 const Player: React.FC<PlayerProps> = ({ 
@@ -32,7 +34,8 @@ const Player: React.FC<PlayerProps> = ({
   onScriptChange,
   pageLayouts = [],
   defaultLanguage = 'zh-CN',
-  pageAudioData = []
+  pageAudioData = [],
+  scriptName = ''
 }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [inputPage, setInputPage] = useState('1');
@@ -41,15 +44,24 @@ const Player: React.FC<PlayerProps> = ({
   const { speak: speakWithDefault, stop: stopDefault } = useSpeech();
   const { speak: speakWithFallback, stop: stopFallback, isSpeaking } = useSpeechWithFallback();
   
+  // 动态生成音频文件路径：/tts/脚本名/section-id-索引.wav
+  const getAudioPath = useCallback((audioData: PageAudioData | undefined) => {
+    if (!audioData || !scriptName) return null;
+    const { sectionId, contentIndex } = audioData;
+    const filename = `${sectionId}-${String(contentIndex + 1).padStart(2, '0')}.wav`;
+    return `/tts/${scriptName}/${filename}`;
+  }, [scriptName]);
+
   // 使用新的 speak 和 stop，支持本地音频和 TTS 备用方案
   const speak = useCallback((text: string, options: Record<string, unknown>, voiceOptions?: Record<string, unknown>) => {
     const audioData = pageAudioData[currentPage];
     const lang = (voiceOptions?.lang as string) || language;
+    const audioPath = getAudioPath(audioData);
     
-    // 如果有本地音频文件且 duration 存在，使用新的 speak
-    if (audioData?.audioFile) {
+    // 如果有本地音频文件，使用新的 speak
+    if (audioPath) {
       return speakWithFallback(text, {
-        audioFile: `/tts/${audioData.audioFile}`,
+        audioFile: audioPath,
         lang,
         onEnd: options?.onEnd as (() => void) | undefined,
         onError: options?.onError as ((error: Error) => void) | undefined,
@@ -58,7 +70,7 @@ const Player: React.FC<PlayerProps> = ({
     
     // 否则使用默认的 speak（原有逻辑）
     return speakWithDefault(text, options, voiceOptions);
-  }, [currentPage, pageAudioData, language, speakWithFallback, speakWithDefault]);
+  }, [currentPage, pageAudioData, language, speakWithFallback, speakWithDefault, getAudioPath]);
   
   const stop = useCallback(() => {
     stopDefault();
@@ -191,7 +203,7 @@ const Player: React.FC<PlayerProps> = ({
             }
           }
         },
-        onError: (error) => {
+        onError: (error: SpeechSynthesisErrorEvent) => {
           console.error('[Player] Speech error:', error);
           isSpeakingRef.current = false;
           if (timerRef.current) clearInterval(timerRef.current);
