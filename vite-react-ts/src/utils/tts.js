@@ -35,29 +35,38 @@ async function synthesizeSpeechNode(text, voice) {
     const synthesizer = new sdk.SpeechSynthesizer(speechConfig, audioConfig);
     
     return new Promise((resolve, reject) => {
+      let resolved = false;
+      
       synthesizer.speakTextAsync(
         text,
-        (result) => {
+        async (result) => {
+          if (resolved) return;
+          
           if (result.reason === sdk.ResultReason.SynthesizingAudioCompleted) {
-            // 读取文件并返回 buffer
-            setTimeout(async () => {
-              try {
-                const buffer = await fs.readFile(tempFile);
-                await fs.unlink(tempFile); // 删除临时文件
-                resolve(buffer);
-              } catch (err) {
-                reject(err);
-              }
-            }, 100);
+            try {
+              resolved = true;
+              // 等待文件被完全写入
+              await new Promise(r => setTimeout(r, 200));
+              const buffer = await fs.readFile(tempFile);
+              await fs.unlink(tempFile); // 删除临时文件
+              resolve(buffer);
+            } catch (err) {
+              reject(err);
+            }
           } else if (result.reason === sdk.ResultReason.Canceled) {
+            resolved = true;
             const cancellation = sdk.SpeechSynthesisCancellationDetails.fromResult(result);
-            reject(new Error(`语音合成被取消: ${cancellation.reason}`));
+            reject(new Error(`语音合成被取消: ${cancellation.reason} - ${cancellation.errorDetails}`));
           } else {
-            reject(new Error('语音合成失败'));
+            resolved = true;
+            reject(new Error(`语音合成失败: ${result.reason}`));
           }
         },
         (err) => {
-          reject(err);
+          if (!resolved) {
+            resolved = true;
+            reject(err);
+          }
         }
       );
     });

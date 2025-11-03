@@ -182,6 +182,20 @@ async function generate() {
   // 确保输出目录存在
   await fs.mkdir(CONFIG.outputDir, { recursive: true });
   
+  // 清理旧的 TTS 文件
+  console.log('🧹 清理旧文件...');
+  try {
+    const files = await fs.readdir(CONFIG.outputDir);
+    for (const file of files) {
+      if (file.endsWith('.wav')) {
+        await fs.unlink(path.join(CONFIG.outputDir, file));
+      }
+    }
+    console.log(`✅ 已删除 ${files.filter(f => f.endsWith('.wav')).length} 个旧 WAV 文件\n`);
+  } catch (err) {
+    console.warn('⚠️  清理文件时出错:', err.message);
+  }
+  
   // 加载脚本配置
   const scriptConfig = await loadScriptConfig(scriptName);
   
