@@ -26,30 +26,41 @@ async function synthesizeSpeechNode(text, voice) {
     
     speechConfig.speechSynthesisVoiceName = voice;
     
-    // 创建文件输出以获取音频 buffer
-    const tempFile = `/tmp/tts_${Date.now()}.wav`;
-    const { promises: fs } = await import('fs');
-    
-    // 使用文件输出
-    const audioConfig = sdk.AudioConfig.fromAudioFileOutput(tempFile);
+    // 使用音频缓冲区输出（而不是文件）
+    const audioConfig = sdk.AudioConfig.fromDefaultSpeakerOutput();
     const synthesizer = new sdk.SpeechSynthesizer(speechConfig, audioConfig);
     
     return new Promise((resolve, reject) => {
       let resolved = false;
+      let audioBuffer = null;
+      
+      // 设置连接事件来获取音频数据
+      synthesizer.synthesizing = (sender, event) => {
+        // 累积音频数据
+        if (!audioBuffer) {
+          audioBuffer = Buffer.from(event.result.audioData);
+        } else {
+          audioBuffer = Buffer.concat([audioBuffer, Buffer.from(event.result.audioData)]);
+        }
+      };
       
       synthesizer.speakTextAsync(
         text,
-        async (result) => {
+        (result) => {
           if (resolved) return;
           
           if (result.reason === sdk.ResultReason.SynthesizingAudioCompleted) {
             try {
               resolved = true;
-              // 等待文件被完全写入
-              await new Promise(r => setTimeout(r, 200));
-              const buffer = await fs.readFile(tempFile);
-              await fs.unlink(tempFile); // 删除临时文件
-              resolve(buffer);
+              // 获取完整的音频数据
+              if (result.audioData && result.audioData.byteLength > 0) {
+                resolve(Buffer.from(result.audioData));
+              } else if (audioBuffer) {
+                resolve(audioBuffer);
+              } else {
+                // 如果没有得到音频数据，重新尝试用文件方式作为备选
+                synthesizeSpeechWithFile(text, voice, sdk).then(resolve).catch(reject);
+              }
             } catch (err) {
               reject(err);
             }
@@ -73,6 +84,57 @@ async function synthesizeSpeechNode(text, voice) {
   } catch (error) {
     throw new Error(`TTS 初始化失败: ${error instanceof Error ? error.message : String(error)}`);
   }
+}
+
+// 备选方案：使用文件输出
+async function synthesizeSpeechWithFile(text, voice, sdk) {
+  const { promises: fs } = await import('fs');
+  const tempFile = `/tmp/tts_${Date.now()}.wav`;
+  
+  const speechConfig = sdk.SpeechConfig.fromSubscription(
+    process.env.SPEECH_KEY,
+    process.env.SPEECH_REGION
+  );
+  speechConfig.speechSynthesisVoiceName = voice;
+  
+  const audioConfig = sdk.AudioConfig.fromAudioFileOutput(tempFile);
+  const synthesizer = new sdk.SpeechSynthesizer(speechConfig, audioConfig);
+  
+  return new Promise((resolve, reject) => {
+    let resolved = false;
+    
+    synthesizer.speakTextAsync(
+      text,
+      async (result) => {
+        if (resolved) return;
+        
+        if (result.reason === sdk.ResultReason.SynthesizingAudioCompleted) {
+          try {
+            resolved = true;
+            await new Promise(r => setTimeout(r, 300));
+            const buffer = await fs.readFile(tempFile);
+            await fs.unlink(tempFile).catch(() => {}); // 删除临时文件
+            resolve(buffer);
+          } catch (err) {
+            reject(err);
+          }
+        } else if (result.reason === sdk.ResultReason.Canceled) {
+          resolved = true;
+          const cancellation = sdk.SpeechSynthesisCancellationDetails.fromResult(result);
+          reject(new Error(`语音合成被取消: ${cancellation.errorDetails}`));
+        } else {
+          resolved = true;
+          reject(new Error('语音合成失败'));
+        }
+      },
+      (err) => {
+        if (!resolved) {
+          resolved = true;
+          reject(err);
+        }
+      }
+    );
+  });
 }
 
 // 浏览器环境实现
