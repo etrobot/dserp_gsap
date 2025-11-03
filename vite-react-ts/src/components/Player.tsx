@@ -1,9 +1,15 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { useSpeech } from '../hooks/useSpeech';
+import { useSpeechWithFallback } from '../hooks/useSpeechWithFallback';
 import { useRecording } from '../hooks/useRecording';
 import Hyperspeed from '@/components/background/highspeed';
 import Squares from '@/components/background/squares';
+
+interface PageAudioData {
+  audioFile?: string;
+  duration?: number;
+}
 
 interface PlayerProps {
   pages: ReactNode[];
@@ -14,6 +20,7 @@ interface PlayerProps {
   onScriptChange?: (fileName: string) => void;
   pageLayouts?: string[];
   defaultLanguage?: string; // 从 JSON 读取的默认语言
+  pageAudioData?: PageAudioData[]; // 每页的音频数据
 }
 
 const Player: React.FC<PlayerProps> = ({ 
@@ -24,13 +31,39 @@ const Player: React.FC<PlayerProps> = ({
   currentScript = '',
   onScriptChange,
   pageLayouts = [],
-  defaultLanguage = 'zh-CN'
+  defaultLanguage = 'zh-CN',
+  pageAudioData = []
 }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [inputPage, setInputPage] = useState('1');
   const [language, setLanguage] = useState<string>(defaultLanguage);
   const totalPages = pages.length;
-  const { speak, stop, isSpeaking } = useSpeech();
+  const { speak: speakWithDefault, stop: stopDefault } = useSpeech();
+  const { speak: speakWithFallback, stop: stopFallback, isSpeaking } = useSpeechWithFallback();
+  
+  // 使用新的 speak 和 stop，支持本地音频和 TTS 备用方案
+  const speak = useCallback((text: string, options: Record<string, unknown>, voiceOptions?: Record<string, unknown>) => {
+    const audioData = pageAudioData[currentPage];
+    const lang = (voiceOptions?.lang as string) || language;
+    
+    // 如果有本地音频文件且 duration 存在，使用新的 speak
+    if (audioData?.audioFile) {
+      return speakWithFallback(text, {
+        audioFile: `/tts/${audioData.audioFile}`,
+        lang,
+        onEnd: options?.onEnd as (() => void) | undefined,
+        onError: options?.onError as ((error: Error) => void) | undefined,
+      });
+    }
+    
+    // 否则使用默认的 speak（原有逻辑）
+    return speakWithDefault(text, options, voiceOptions);
+  }, [currentPage, pageAudioData, language, speakWithFallback, speakWithDefault]);
+  
+  const stop = useCallback(() => {
+    stopDefault();
+    stopFallback();
+  }, [stopDefault, stopFallback]);
   const contentRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const isSpeakingRef = useRef(false);
@@ -229,6 +262,10 @@ const Player: React.FC<PlayerProps> = ({
     }
   }, [stop, isRecording, stopRecording]);
 
+  const handleReload = useCallback(() => {
+    window.location.reload();
+  }, []);
+
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -359,6 +396,14 @@ const Player: React.FC<PlayerProps> = ({
       </div>
 
       <div className="mt-3 flex items-center gap-4 flex-wrap justify-center">
+        <button
+          onClick={handleReload}
+          className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 transition-colors"
+          title="重新加载页面"
+        >
+          ↻ 重载
+        </button>
+
         {scriptFiles.length > 0 && onScriptChange && (
           <select
             value={currentScript}

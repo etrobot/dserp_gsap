@@ -1,6 +1,6 @@
 import { useState, useMemo, type ReactNode } from 'react'
 import Player from '@/components/Player'
-import Presentation from '@/presentation/Presentation'
+import Presentation from '@/components/Presentation'
 import { useScriptData } from '@/hooks/useScriptData'
 import { useScriptsList } from '@/hooks/useScriptsList'
 
@@ -11,12 +11,13 @@ function App() {
     selectedFile ? `/scripts/${selectedFile}` : ''
   )
 
-  const { pages, subtitleTexts, pageLayouts } = useMemo(() => {
-    if (!scriptData) return { pages: [], subtitleTexts: [], pageLayouts: [] }
+  const { pages, subtitleTexts, pageLayouts, pageAudioData } = useMemo(() => {
+    if (!scriptData) return { pages: [], subtitleTexts: [], pageLayouts: [], pageAudioData: [] }
 
     const pagesArr = [] as ReactNode[]
     const subtitleArr = [] as string[]
     const layoutsArr = [] as string[]
+    const audioDataArr: Array<{ audioFile?: string; duration?: number }> = []
 
     for (let i = 0; i < scriptData.sections.length; i++) {
       const section = scriptData.sections[i]
@@ -38,9 +39,16 @@ function App() {
       
       // Extract layout type
       layoutsArr.push(section.layout || '')
+      
+      // Extract audio data from first content item if available
+      const firstContent = section.content?.[0]
+      audioDataArr.push({
+        audioFile: firstContent?.audioFile,
+        duration: firstContent?.duration,
+      })
     }
 
-    return { pages: pagesArr, subtitleTexts: subtitleArr, pageLayouts: layoutsArr }
+    return { pages: pagesArr, subtitleTexts: subtitleArr, pageLayouts: layoutsArr, pageAudioData: audioDataArr }
   }, [scriptData])
 
   // Show loading state
@@ -66,6 +74,7 @@ function App() {
       pages={pages} 
       subtitleTexts={subtitleTexts}
       pageLayouts={pageLayouts}
+      pageAudioData={pageAudioData}
       scriptFiles={scriptsList?.files || []}
       currentScript={selectedFile}
       onScriptChange={setSelectedFile}

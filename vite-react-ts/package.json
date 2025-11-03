@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "record": "node scripts/record.mjs"
+    "record": "node scripts/record.mjs",
+    "tts": "node scripts/generate-tts.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
