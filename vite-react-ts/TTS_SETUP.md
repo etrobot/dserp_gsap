@@ -74,6 +74,23 @@ npm run tts ysjfTagInsightScript
 🎉 完成！生成了 25 个音频文件
 ```
 
+## 文件组织结构
+
+```
+public/tts/
+├── ysjfTagInsightScript/          # 脚本名称文件夹
+│   ├── cover-01.wav               # section-id-索引.wav
+│   ├── cover-02.wav
+│   ├── report_note-01.wav
+│   ├── report_note-02.wav
+│   ├── report_note-03.wav
+│   ├── quadrant_analysis-01.wav
+│   ├── ...
+│   └── strategy_recommendations-05.wav
+└── otherScript/                   # 其他脚本（可扩展）
+    └── *.wav
+```
+
 ## JSON 格式变化
 
 ### 生成前
@@ -89,19 +106,22 @@ npm run tts ysjfTagInsightScript
 }
 ```
 
-### 生成后
+### 生成后（无需添加 audioFile 字段）
 ```json
 {
   "id": "cover",
   "content": [
     {
       "read_srt": "标签数据学习分析报告",
-      "duration": 3.20,
-      "audioFile": "tts_0001.wav"
+      "duration": 2.9
     }
   ]
 }
 ```
+
+**注意**：`audioFile` 字段不需要手动添加，Player 会根据 `section.id` 和内容索引自动计算：
+- 文件路径: `/tts/脚本名/section-id-索引.wav`
+- 例如: `/tts/ysjfTagInsightScript/cover-01.wav`
 
 ## Player 播放流程
 
