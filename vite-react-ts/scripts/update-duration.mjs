@@ -30,7 +30,7 @@ function getWavDuration(buffer) {
 async function updateDurations() {
   const scriptName = process.argv[2] || 'ysjfTagInsightScript';
   const scriptPath = path.join(__dirname, `../public/scripts/${scriptName}.json`);
-  const ttsDir = path.join(__dirname, '../public/tts');
+  const ttsDir = path.join(__dirname, '../public/tts', scriptName);
   
   console.log('⏱️  更新音频时长\n');
   
@@ -38,13 +38,13 @@ async function updateDurations() {
   const scriptContent = await fs.readFile(scriptPath, 'utf-8');
   const scriptData = JSON.parse(scriptContent);
   
-  // 构建 audioFile -> duration 的映射
+  // 构建 (sectionId, contentIndex) -> duration 的映射
   const durationMap = new Map();
   
   try {
     const ttsFiles = await fs.readdir(ttsDir);
     
-    console.log(`📁 读取 TTS 文件...\n`);
+    console.log(`📁 读取 TTS 文件 (${scriptName})...\n`);
     
     for (const file of ttsFiles.sort()) {
       if (!file.endsWith('.wav')) continue;
@@ -53,8 +53,16 @@ async function updateDurations() {
         const filePath = path.join(ttsDir, file);
         const buffer = await fs.readFile(filePath);
         const duration = getWavDuration(buffer);
-        durationMap.set(file, duration);
-        console.log(`✅ ${file}: ${duration}s (${buffer.length} bytes)`);
+        
+        // 从文件名解析 section-id 和 index: section-id-01.wav
+        const match = file.match(/^(.+?)-(\d+)\.wav$/);
+        if (match) {
+          const sectionId = match[1];
+          const index = parseInt(match[2], 10) - 1; // 转换为 0-based
+          const key = `${sectionId}:${index}`;
+          durationMap.set(key, duration);
+          console.log(`✅ ${file}: ${duration}s (section: ${sectionId}, index: ${index})`);
+        }
       } catch (err) {
         console.error(`❌ ${file}: ${err.message}`);
       }
@@ -71,12 +79,16 @@ async function updateDurations() {
   for (const section of scriptData.sections) {
     if (!section.content) continue;
     
-    for (const item of section.content) {
-      if (item.audioFile && durationMap.has(item.audioFile)) {
-        const newDuration = durationMap.get(item.audioFile);
+    for (let contentIndex = 0; contentIndex < section.content.length; contentIndex++) {
+      const item = section.content[contentIndex];
+      const key = `${section.id}:${contentIndex}`;
+      
+      if (durationMap.has(key)) {
+        const newDuration = durationMap.get(key);
         if (item.duration !== newDuration) {
           item.duration = newDuration;
           updateCount++;
+          console.log(`   更新: ${key} -> ${newDuration}s`);
         }
       }
     }
@@ -85,7 +97,7 @@ async function updateDurations() {
   // 保存更新后的 JSON
   await fs.writeFile(scriptPath, JSON.stringify(scriptData, null, 2));
   
-  console.log(`✅ 已更新 ${updateCount} 项的 duration`);
+  console.log(`\n✅ 已更新 ${updateCount} 项的 duration`);
   console.log(`✅ 脚本配置已保存: ${scriptPath}`);
   console.log(`\n🎉 完成！`);
 }
