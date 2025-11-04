@@ -68,6 +68,47 @@ async function record() {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
   const outputPath = path.join(CONFIG.outputDir, `${scriptName}_${timestamp}.webm`);
   
+  // 检查开发服务器是否运行
+  console.log('🔍 检查开发服务器...');
+  let serverStarted = false;
+  let devServerProcess = null;
+  
+  try {
+    const response = await fetch('http://localhost:5173/');
+    console.log('✅ 开发服务器已在运行');
+  } catch (err) {
+    console.log('⚠️  开发服务器未运行，正在启动...');
+    const { spawn } = await import('child_process');
+    devServerProcess = spawn('pnpm', ['dev'], {
+      cwd: path.join(__dirname, '..'),
+      stdio: 'pipe',
+      shell: true
+    });
+    
+    serverStarted = true;
+    
+    // 等待服务器启动
+    await new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error('服务器启动超时'));
+      }, 30000);
+      
+      devServerProcess.stdout.on('data', (data) => {
+        const output = data.toString();
+        if (output.includes('Local:') && output.includes('5173')) {
+          clearTimeout(timeout);
+          console.log('✅ 开发服务器已启动');
+          // 额外等待2秒确保服务器完全就绪
+          setTimeout(resolve, 2000);
+        }
+      });
+      
+      devServerProcess.stderr.on('data', (data) => {
+        console.error('服务器错误:', data.toString());
+      });
+    });
+  }
+  
   // 启动浏览器（Playwright 内置录制功能）
   const browser = await chromium.launch({
     headless: true,
@@ -96,10 +137,13 @@ async function record() {
     // 访问页面
     const url = `http://localhost:5173/?script=${scriptName}`;
     console.log(`🌐 打开页面: ${url}`);
-    await page.goto(url, { waitUntil: 'networkidle' });
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
 
-    // 等待一秒让页面完全渲染
-    await page.waitForTimeout(2000);
+    // 等待 React 应用加载完成
+    await page.waitForSelector('button', { timeout: 10000 });
+    
+    // 额外等待让页面完全渲染（包括图片等）
+    await page.waitForTimeout(3000);
 
     // 设置语言
     console.log(`🗣️  设置语言为: ${language}`);
@@ -169,6 +213,12 @@ async function record() {
       console.log(`📦 文件大小: ${fileSizeMB} MB`);
     } else {
       console.error('❌ 未找到录制的视频文件');
+    }
+    
+    // 如果是脚本启动的服务器，关闭它
+    if (serverStarted && devServerProcess) {
+      console.log('🛑 关闭开发服务器...');
+      devServerProcess.kill();
     }
   }
 }

@@ -7,7 +7,14 @@ import { ToastProvider } from '@/contexts/ToastContext'
 import { ToastContainer } from '@/components/Toast'
 
 function AppContent() {
-  const [selectedFile, setSelectedFile] = useState<string>('')
+  // Read script from URL parameter
+  const getInitialScript = () => {
+    const params = new URLSearchParams(window.location.search)
+    const scriptParam = params.get('script')
+    return scriptParam ? `${scriptParam}.json` : ''
+  }
+
+  const [selectedFile, setSelectedFile] = useState<string>(getInitialScript())
   const { scripts: scriptsList, loading: listLoading, error: listError } = useScriptsList()
   const { data: scriptData, loading: dataLoading, error: dataError } = useScriptData(
     selectedFile ? `/scripts/${selectedFile}` : ''
@@ -19,7 +26,7 @@ function AppContent() {
     const pagesArr = [] as ReactNode[]
     const subtitleArr = [] as string[]
     const layoutsArr = [] as string[]
-    const audioDataArr: Array<{ sectionId: string; contentIndex: number; duration?: number }> = []
+    const audioDataArr: Array<{ sectionId: string; contentItems: Array<{ contentIndex: number; duration?: number }> }> = []
 
     for (let i = 0; i < scriptData.sections.length; i++) {
       const section = scriptData.sections[i]
@@ -42,12 +49,15 @@ function AppContent() {
       // Extract layout type
       layoutsArr.push(section.layout || '')
       
-      // Extract audio data from first content item: use section id and content index (0-based)
-      // File will be: /tts/scriptName/section-id-01.wav
+      // Extract all audio files for this section
+      const contentItems = (section.content || []).map((item, idx) => ({
+        contentIndex: idx,
+        duration: item.duration,
+      }))
+      
       audioDataArr.push({
         sectionId: section.id,
-        contentIndex: 0, // 第一个内容
-        duration: section.content?.[0]?.duration,
+        contentItems,
       })
     }
 

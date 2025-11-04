@@ -28,6 +28,12 @@ const CoverLayout = ({ section }: CoverLayoutProps) => {
     macaronColors[Math.floor(Math.random() * macaronColors.length)],
     [section.id]
   );
+
+  // Check if illustration is a URL (http/https) or local path (starts with /)
+  const isImageUrl = section.illustration && 
+    (section.illustration.startsWith('http://') || 
+     section.illustration.startsWith('https://') || 
+     section.illustration.startsWith('/'));
   
   return (
     <div className="w-full h-full flex flex-col items-center justify-center relative px-8">
@@ -39,10 +45,21 @@ const CoverLayout = ({ section }: CoverLayoutProps) => {
           className="max-w-6xl w-full"
         >
           <div className="py-16 px-12 flex items-center gap-12 min-h-[400px]">
-            {/* Left Column: Icon (50%) */}
+            {/* Left Column: Icon or Image (50%) */}
             {section.illustration && (
               <div className="w-1/2 flex items-center justify-center">
-                <div className="text-9xl">{section.illustration}</div>
+                {isImageUrl ? (
+                  <img 
+                    src={section.illustration} 
+                    alt={section.title || 'Cover illustration'}
+                    className="max-w-full max-h-[500px] object-contain rounded-lg shadow-lg"
+                    style={{
+                      boxShadow: `0 0 20px ${borderColor}40`,
+                    }}
+                  />
+                ) : (
+                  <div className="text-9xl">{section.illustration}</div>
+                )}
               </div>
             )}
             

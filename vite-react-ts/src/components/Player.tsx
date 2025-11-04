@@ -8,8 +8,7 @@ import DotGrid from '@/components/background/DotGrid';
 
 interface PageAudioData {
   sectionId: string;
-  contentIndex: number;
-  duration?: number;
+  contentItems: Array<{ contentIndex: number; duration?: number }>;
 }
 
 interface PlayerProps {
@@ -45,32 +44,74 @@ const Player: React.FC<PlayerProps> = ({
   const { speak: speakWithFallback, stop: stopFallback, isSpeaking } = useSpeechWithFallback();
   
   // 动态生成音频文件路径：/tts/脚本名/section-id-索引.wav
-  const getAudioPath = useCallback((audioData: PageAudioData | undefined) => {
-    if (!audioData || !scriptName) return null;
-    const { sectionId, contentIndex } = audioData;
+  const getAudioPath = useCallback((sectionId: string, contentIndex: number) => {
+    if (!scriptName) return null;
     const filename = `${sectionId}-${String(contentIndex + 1).padStart(2, '0')}.wav`;
     return `/tts/${scriptName}/${filename}`;
   }, [scriptName]);
+
+  // 播放多个音频文件（按顺序）
+  const speakMultipleAudios = useCallback((
+    audioData: PageAudioData | undefined,
+    text: string,
+    lang: string,
+    onEnd?: () => void,
+    onError?: (error: Error) => void
+  ) => {
+    if (!audioData || !audioData.contentItems || audioData.contentItems.length === 0) {
+      // 没有音频数据，使用 TTS
+      return speakWithDefault(text, { onEnd, onError }, { lang });
+    }
+
+    const { sectionId, contentItems } = audioData;
+    let currentIndex = 0;
+
+    const playNext = () => {
+      if (currentIndex >= contentItems.length) {
+        // 所有音频播放完成
+        onEnd?.();
+        return;
+      }
+
+      const item = contentItems[currentIndex];
+      const audioPath = getAudioPath(sectionId, item.contentIndex);
+      
+      if (audioPath) {
+        speakWithFallback('', {
+          audioFile: audioPath,
+          lang,
+          onEnd: () => {
+            currentIndex++;
+            playNext();
+          },
+          onError: (err) => {
+            console.warn(`音频 ${audioPath} 播放失败，尝试下一个`);
+            currentIndex++;
+            playNext();
+          },
+        });
+      } else {
+        currentIndex++;
+        playNext();
+      }
+    };
+
+    playNext();
+  }, [scriptName, getAudioPath, speakWithFallback, speakWithDefault]);
 
   // 使用新的 speak 和 stop，支持本地音频和 TTS 备用方案
   const speak = useCallback((text: string, options: Record<string, unknown>, voiceOptions?: Record<string, unknown>) => {
     const audioData = pageAudioData[currentPage];
     const lang = (voiceOptions?.lang as string) || language;
-    const audioPath = getAudioPath(audioData);
     
-    // 如果有本地音频文件，使用新的 speak
-    if (audioPath) {
-      return speakWithFallback(text, {
-        audioFile: audioPath,
-        lang,
-        onEnd: options?.onEnd as (() => void) | undefined,
-        onError: options?.onError as ((error: Error) => void) | undefined,
-      });
-    }
-    
-    // 否则使用默认的 speak（原有逻辑）
-    return speakWithDefault(text, options, voiceOptions);
-  }, [currentPage, pageAudioData, language, speakWithFallback, speakWithDefault, getAudioPath]);
+    return speakMultipleAudios(
+      audioData,
+      text,
+      lang,
+      options?.onEnd as (() => void) | undefined,
+      options?.onError as ((error: Error) => void) | undefined
+    );
+  }, [currentPage, pageAudioData, language, speakMultipleAudios]);
   
   const stop = useCallback(() => {
     stopDefault();
