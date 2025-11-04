@@ -3,13 +3,13 @@ import TextType from '@/components/TextType';
 import { Feature } from '@/components/slide';
 import type { ScriptSection } from '@/types/scriptTypes';
 
-interface KeypointsLayoutProps {
+interface Two_colsLayoutProps {
   section: ScriptSection;
   index: number;
   total: number;
 }
 
-const KeypointsLayout = ({ section, index, total }: KeypointsLayoutProps) => {
+const Two_colsLayout = ({ section, index, total }: Two_colsLayoutProps) => {
   const getBorderColor = (index: number) => {
     return index % 3 === 0 ? "#10b981" : index % 3 === 1 ? "#3b82f6" : "#ec4899";
   };
@@ -50,13 +50,13 @@ const KeypointsLayout = ({ section, index, total }: KeypointsLayoutProps) => {
   }, [section.content]);
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center relative px-8 py-12">
+    <div className="w-full h-full flex flex-col items-center justify-between relative px-8 py-12">
       {/* Pagination - consistent position */}
       <div className="absolute top-6 right-8 z-20 text-gray-400 text-sm">
         {index + 1}/{total}
       </div>
 
-      <div className="w-full flex flex-col items-center">
+      <div className="w-full flex flex-col items-center flex-1 justify-center">
         <div className="flex flex-col items-center justify-center mb-8">
           <div className="text-5xl mb-4">{section.illustration}</div>
           {section.title && (
@@ -88,8 +88,10 @@ const KeypointsLayout = ({ section, index, total }: KeypointsLayoutProps) => {
           ))}
         </div>
       </div>
+
+      <div className="h-12" />
     </div>
   );
 };
 
-export default KeypointsLayout;
+export default Two_colsLayout;

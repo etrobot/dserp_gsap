@@ -10,7 +10,6 @@ interface TweetProps {
   className?: string;
   borderColor?: string;
   borderSpeed?: string;
-  borderThickness?: number;
   freeze?: boolean;
 }
 
@@ -21,7 +20,6 @@ const Tweet: React.FC<TweetProps> = ({
   className = '',
   borderColor = 'white',
   borderSpeed = '6s',
-  borderThickness = 3,
   freeze = false
 }) => {
   
@@ -32,7 +30,6 @@ const Tweet: React.FC<TweetProps> = ({
         className={className}
         color={borderColor}
         speed={borderSpeed}
-        thickness={borderThickness}
         freeze={freeze}
       >
         <div 
@@ -52,19 +49,30 @@ const Tweet: React.FC<TweetProps> = ({
           {/* Right Column: Text Content */}
           <div className="flex-1 min-w-0 flex flex-col gap-4">
             {title && (
-              <TextType
-                text={title}
-                as="h3"
-                className="text-3xl font-bold text-white leading-tight"
-                showCursor={false}
-                typingSpeed={50}
-                loop={false}
-                startOnVisible={true}
-              />
+              <div
+                style={{
+                  textShadow: `0 0 10px ${borderColor}`,
+                }}
+              >
+                <TextType
+                  text={title}
+                  as="h3"
+                  className="text-3xl font-bold text-white leading-tight"
+                  showCursor={false}
+                  typingSpeed={50}
+                  loop={false}
+                  startOnVisible={true}
+                />
+              </div>
             )}
             
             {data && (
-              <p className="text-gray-200 text-xl leading-relaxed whitespace-pre-wrap">{data}</p>
+              <p 
+                className="text-xl leading-relaxed whitespace-pre-wrap"
+                style={{ color: borderColor }}
+              >
+                {data}
+              </p>
             )}
           </div>
         </div>

@@ -3,8 +3,10 @@ import Player from '@/components/Player'
 import Presentation from '@/components/Presentation'
 import { useScriptData } from '@/hooks/useScriptData'
 import { useScriptsList } from '@/hooks/useScriptsList'
+import { ToastProvider } from '@/contexts/ToastContext'
+import { ToastContainer } from '@/components/Toast'
 
-function App() {
+function AppContent() {
   const [selectedFile, setSelectedFile] = useState<string>('')
   const { scripts: scriptsList, loading: listLoading, error: listError } = useScriptsList()
   const { data: scriptData, loading: dataLoading, error: dataError } = useScriptData(
@@ -61,11 +63,16 @@ function App() {
     )
   }
 
-  // Show error
+  // Show error or validation errors
   if (listError || dataError) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-800 text-white">
-        <div className="text-xl text-red-500">Error: {(listError || dataError)?.message}</div>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-800 text-white p-8">
+        <div className="max-w-2xl w-full">
+          <div className="text-xl font-bold text-red-500 mb-4">❌ Error Loading Script</div>
+          <div className="bg-gray-900 border border-red-500 rounded p-4">
+            <p className="text-white whitespace-pre-wrap">{(listError || dataError)?.message}</p>
+          </div>
+        </div>
       </div>
     )
   }
@@ -82,6 +89,15 @@ function App() {
       defaultLanguage={scriptData?.language || 'zh-CN'}
       scriptName={selectedFile?.replace('.json', '') || ''}
     />
+  )
+}
+
+function App() {
+  return (
+    <ToastProvider>
+      <AppContent />
+      <ToastContainer />
+    </ToastProvider>
   )
 }
 

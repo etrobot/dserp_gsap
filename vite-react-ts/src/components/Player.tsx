@@ -4,7 +4,7 @@ import { useSpeech } from '../hooks/useSpeech';
 import { useSpeechWithFallback } from '../hooks/useSpeechWithFallback';
 import { useRecording } from '../hooks/useRecording';
 import Hyperspeed from '@/components/background/highspeed';
-import Squares from '@/components/background/squares';
+import DotGrid from '@/components/background/DotGrid';
 
 interface PageAudioData {
   sectionId: string;
@@ -275,8 +275,11 @@ const Player: React.FC<PlayerProps> = ({
   }, [stop, isRecording, stopRecording]);
 
   const handleReload = useCallback(() => {
+    if (currentScript) {
+      localStorage.setItem('selectedScript', currentScript);
+    }
     window.location.reload();
-  }, []);
+  }, [currentScript]);
 
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
@@ -331,6 +334,15 @@ const Player: React.FC<PlayerProps> = ({
     setLanguage(defaultLanguage);
   }, [defaultLanguage]);
 
+  // 重载后恢复已保存的脚本选择
+  useEffect(() => {
+    const savedScript = localStorage.getItem('selectedScript');
+    if (savedScript && onScriptChange) {
+      onScriptChange(savedScript);
+      localStorage.removeItem('selectedScript');
+    }
+  }, [onScriptChange]);
+
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
@@ -341,11 +353,11 @@ const Player: React.FC<PlayerProps> = ({
     <div className={`flex flex-col items-center justify-center min-h-screen bg-gray-800 p-8 ${className}`}>
       <div
         ref={containerRef}
-        className="rounded-lg shadow-2xl overflow-hidden relative bg-black"
+        className="rounded-lg shadow-2xl overone_col-hidden relative bg-black"
         style={{ width: '1280px', height: '720px' }}
       >
         {/* Fixed background - changes based on page layout */}
-        <div className="absolute inset-0 overflow-hidden opacity-50 pointer-events-none flex items-center justify-center">
+        <div className="absolute inset-0 overone_col-hidden opacity-50 pointer-events-none flex items-center justify-center">
           <div className="w-full h-full">
             {pageLayouts[currentPage] === 'cover' ? (
               <Hyperspeed
@@ -388,12 +400,13 @@ const Player: React.FC<PlayerProps> = ({
                 }}
               />
             ) : (
-              <Squares
-                direction="diagonal"
+              <DotGrid
+                direction="diagonal-reverse"
                 speed={0.005}
-                borderColor="#999"
-                squareSize={40}
-                hoverFillColor="#222"
+                dotColor="#999"
+                dotSize={4}
+                gap={20}
+                hoverFillColor="#fff"
               />
             )}
           </div>
@@ -401,7 +414,7 @@ const Player: React.FC<PlayerProps> = ({
         {/* Content layer */}
         <div
           ref={contentRef}
-          className="relative z-10 w-full h-full overflow-hidden"
+          className="relative z-10 w-full h-full overone_col-hidden"
         >
           {pages[currentPage]}
         </div>

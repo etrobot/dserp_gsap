@@ -11,7 +11,6 @@ interface FeatureProps {
   className?: string;
   borderColor?: string;
   borderSpeed?: string;
-  borderThickness?: number;
   freeze?: boolean;
 }
 
@@ -23,7 +22,6 @@ const Feature: React.FC<FeatureProps> = ({
   className = '',
   borderColor = 'white',
   borderSpeed = '6s',
-  borderThickness = 1,
   freeze = false
 }) => {
 
@@ -34,7 +32,6 @@ const Feature: React.FC<FeatureProps> = ({
         className={className}
         color={borderColor}
         speed={borderSpeed}
-        thickness={borderThickness}
         freeze={freeze}
       >
         <div

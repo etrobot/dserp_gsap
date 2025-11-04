@@ -1,26 +1,45 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import FadeContent from '@/components/FadeContent';
 import { Feature } from '@/components/slide';
 import type { ScriptSection } from '@/types/scriptTypes';
 
-interface FlowLayoutProps {
+interface One_colLayoutProps {
   section: ScriptSection;
   index: number;
   total: number;
 }
 
-const FlowLayout = ({ section, index, total }: FlowLayoutProps) => {
-  const [visibleFlowItems, setVisibleFlowItems] = useState<number>(0);
+const macaronColors = [
+  '#FFB3BA', // Pink
+  '#FFDFBA', // Peach
+  '#FFFFBA', // Light Yellow
+  '#BAFFC9', // Mint
+  '#BAE1FF', // Sky Blue
+  '#E0BBE4', // Lavender
+  '#FEC8D8', // Light Pink
+  '#D4F1F4', // Cyan
+  '#FFD3B6', // Apricot
+  '#A8E6CF', // Seafoam
+];
+
+const One_colLayout = ({ section, index, total }: One_colLayoutProps) => {
+  const [visibleOne_colItems, setVisibleOne_colItems] = useState<number>(0);
+
+  const itemColors = useMemo(() => {
+    return section.content?.map(() => 
+      macaronColors[Math.floor(Math.random() * macaronColors.length)]
+    ) || [];
+  }, [section.id]);
 
   useEffect(() => {
     if (!section.content || section.content.length === 0) return;
     
     let currentIndex = 0;
-    setVisibleFlowItems(0);
+    setVisibleOne_colItems(0);
 
     const showNextItem = () => {
       if (currentIndex < section.content!.length) {
-        setVisibleFlowItems(currentIndex + 1);
+        setVisibleOne_colItems(currentIndex + 1);
         currentIndex++;
         
         if (currentIndex < section.content!.length) {
@@ -57,7 +76,7 @@ const FlowLayout = ({ section, index, total }: FlowLayoutProps) => {
         </FadeContent>
 
         <div className="space-y-5">
-          {section.content?.slice(0, visibleFlowItems).map((item, i) => (
+          {section.content?.slice(0, visibleOne_colItems).map((item, i) => (
             <div key={i}>
               {item.data && (
                 <Feature
@@ -65,7 +84,7 @@ const FlowLayout = ({ section, index, total }: FlowLayoutProps) => {
                   title={item.data.title}
                   subtitle={item.data.description}
                   layout="horizontal"
-                  borderColor="#8b5cf6"
+                  borderColor={itemColors[i]}
                   borderSpeed={`${4 + i}s`}
                 />
               )}
@@ -77,4 +96,4 @@ const FlowLayout = ({ section, index, total }: FlowLayoutProps) => {
   );
 };
 
-export default FlowLayout;
+export default One_colLayout;

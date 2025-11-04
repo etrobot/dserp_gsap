@@ -7,6 +7,7 @@ interface MultiLineTextTypeProps {
   lines: string[];
   className?: string;
   lineClassName?: string;
+  style?: React.CSSProperties;
   typingSpeed?: number;
   deletingSpeed?: number;
   pauseAfterTyping?: number;
@@ -24,6 +25,7 @@ const MultiLineTextType = ({
   lines,
   className = '',
   lineClassName = '',
+  style,
   typingSpeed = 50,
   deletingSpeed = 30,
   pauseAfterTyping = 1500,
@@ -154,7 +156,7 @@ const MultiLineTextType = ({
   ]);
 
   return (
-    <div ref={containerRef} className={`w-full ${className}`}>
+    <div ref={containerRef} className={`w-full ${className}`} style={style}>
       <span className={`inline-block whitespace-pre-wrap ${lineClassName}`}>
         {displayedText}
       </span>

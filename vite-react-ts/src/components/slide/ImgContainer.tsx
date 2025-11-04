@@ -7,7 +7,6 @@ interface ImgContainerProps {
   className?: string;
   borderColor?: string;
   borderSpeed?: string;
-  borderThickness?: number;
   imgClassName?: string;
   freeze?: boolean;
 }
@@ -18,7 +17,6 @@ const ImgContainer: React.FC<ImgContainerProps> = ({
   className = '',
   borderColor = 'white',
   borderSpeed = '6s',
-  borderThickness = 1,
   imgClassName = '',
   freeze = false
 }) => {
@@ -29,7 +27,6 @@ const ImgContainer: React.FC<ImgContainerProps> = ({
       className={className}
       color={borderColor}
       speed={borderSpeed}
-      thickness={borderThickness}
     >
       <img
         src={src}

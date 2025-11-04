@@ -15,8 +15,9 @@ export type ScriptSection = {
   title?: string;
   content?: featureContent[];
   illustration?: string;
-  layout?: 'cover' | 'chart' | 'keypoints' | 'flow' | 'multiline-type' | 'floating-lines';
-  chartConfig?: any; // ECharts configuration for 'chart' layout
+  layout?: 'cover' | 'chart' | 'two_cols' | 'one_col' | 'multiline-type' | 'floating-lines';
+  chartConfig?: any; // ECharts configuration for 'chart' layout (inline)
+  chartPath?: string; // Path to external ECharts configuration file in public/chart/{scriptName}/
 };
 
 export type ScriptSpec = {

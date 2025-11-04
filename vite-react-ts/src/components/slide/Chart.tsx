@@ -104,7 +104,7 @@ const Chart: React.FC<ChartProps> = ({
         },
         splitLine: {
           lineStyle: {
-            type: 'dashed',
+            type: 'solid',
             color: '#444'
           }
         }

@@ -1,6 +1,7 @@
 import TextType from '@/components/TextType';
 import Chart from '@/components/slide/Chart';
 import type { ScriptSection } from '@/types/scriptTypes';
+import { useChartConfig } from '@/hooks/useChartConfig';
 
 interface ChartLayoutProps {
   section: ScriptSection;
@@ -9,9 +10,12 @@ interface ChartLayoutProps {
 }
 
 const ChartLayout = ({ section, index, total }: ChartLayoutProps) => {
-  const chartConfig = section.chartConfig;
+  const { config: chartConfig, loading: chartLoading, error: chartError } = useChartConfig(
+    section.chartPath,
+    section.chartConfig
+  );
   
-  if (!chartConfig) {
+  if (!chartConfig && !chartLoading) {
     console.error('No chartConfig found for chart section', section);
   }
 
@@ -40,7 +44,18 @@ const ChartLayout = ({ section, index, total }: ChartLayoutProps) => {
 
       {/* Chart takes full height with top padding for header */}
       <div className="w-full h-full pt-16 px-4 pb-4">
-        {chartConfig ? (
+        {chartLoading ? (
+          <div className="flex items-center justify-center h-full text-white">
+            Loading chart...
+          </div>
+        ) : chartError ? (
+          <div className="flex items-center justify-center h-full text-white">
+            <div className="text-center">
+              <p>Error loading chart</p>
+              <p className="text-sm text-gray-400 mt-2">{chartError.message}</p>
+            </div>
+          </div>
+        ) : chartConfig ? (
           <Chart config={chartConfig} />
         ) : (
           <div className="flex items-center justify-center h-full text-white">

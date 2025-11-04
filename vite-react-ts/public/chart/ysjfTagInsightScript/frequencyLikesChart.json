@@ -1,0 +1,47 @@
+{
+  "xAxis": {
+    "type": "category",
+    "data": [
+      "专业内容标签",
+      "娱乐内容标签",
+      "科技数码标签",
+      "影视剧情标签"
+    ]
+  },
+  "yAxis": [
+    {
+      "type": "value",
+      "name": "平均出现次数",
+      "position": "left"
+    },
+    {
+      "type": "value",
+      "name": "平均点赞量",
+      "position": "right"
+    }
+  ],
+  "series": [
+    {
+      "name": "平均出现次数",
+      "type": "bar",
+      "yAxisIndex": 0,
+      "data": [
+        15.56,
+        4.17,
+        4,
+        2.5
+      ]
+    },
+    {
+      "name": "平均点赞量",
+      "type": "bar",
+      "yAxisIndex": 1,
+      "data": [
+        39.18,
+        40.77,
+        67.12,
+        31.6
+      ]
+    }
+  ]
+}

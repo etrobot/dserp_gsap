@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 interface SimpleCharTypeProps {
   text: string;
   className?: string;
+  style?: React.CSSProperties;
   speed?: number;
   initialDelay?: number;
   onComplete?: () => void;
@@ -11,6 +12,7 @@ interface SimpleCharTypeProps {
 const SimpleCharType = ({
   text,
   className = '',
+  style,
   speed = 50,
   initialDelay = 0,
   onComplete,
@@ -36,7 +38,7 @@ const SimpleCharType = ({
     return () => clearTimeout(timeout);
   }, [text, speed, initialDelay, onComplete]);
 
-  return <div className={className}>{displayedText}</div>;
+  return <div className={className} style={style}>{displayedText}</div>;
 };
 
 export default SimpleCharType;

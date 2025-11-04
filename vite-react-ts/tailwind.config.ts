@@ -39,6 +39,9 @@ export default {
           '100%': { top: '5%', opacity: '0' },
         },
       },
+      spacing: {
+        'border-px': '1px',
+      },
     },
   },
   plugins: [],

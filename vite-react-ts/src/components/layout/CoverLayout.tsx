@@ -36,7 +36,6 @@ const CoverLayout = ({ section }: CoverLayoutProps) => {
           as="div"
           color={borderColor}
           speed="8s"
-          thickness={3}
           className="max-w-6xl w-full"
         >
           <div className="py-16 px-12 flex items-center gap-12 min-h-[400px]">
@@ -50,18 +49,25 @@ const CoverLayout = ({ section }: CoverLayoutProps) => {
             {/* Right Column: Title + Description (50%) */}
             <div className="w-1/2 flex flex-col gap-6 text-left">
               {section.title && (
-                <SimpleCharType
-                  text={section.title}
-                  className="text-5xl md:text-6xl font-black text-white leading-tight break-words"
-                  speed={50}
-                  initialDelay={0}
-                />
+                <div
+                  style={{
+                    textShadow: `0 0 10px ${borderColor}`,
+                  }}
+                >
+                  <SimpleCharType
+                    text={section.title}
+                    className="text-5xl md:text-6xl font-black text-white leading-tight break-words"
+                    speed={50}
+                    initialDelay={0}
+                  />
+                </div>
               )}
 
               {firstContent?.description && (
                 <MultiLineTextType
                   lines={[firstContent.description]}
-                  lineClassName="text-xl md:text-2xl text-gray-300 leading-relaxed"
+                  lineClassName="text-xl md:text-2xl leading-relaxed"
+                  style={{ color: borderColor }}
                   typingSpeed={30}
                   showCursor={false}
                   initialDelay={section.title ? section.title.length * 50 + 300 : 0}
