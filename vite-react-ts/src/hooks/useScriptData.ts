@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { ScriptSpec } from '@/types/scriptTypes';
 import { validateScript } from '@/utils/scriptValidator';
-import { useToast } from '@/contexts/ToastContext';
 
 export interface ScriptDataResult {
   data: ScriptSpec | null;
@@ -12,7 +11,6 @@ export interface ScriptDataResult {
 }
 
 export const useScriptData = (scriptPath: string): ScriptDataResult => {
-  const { showToast } = useToast();
   const [data, setData] = useState<ScriptSpec | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -49,12 +47,10 @@ export const useScriptData = (scriptPath: string): ScriptDataResult => {
           setValidationErrors(validationResult.errors);
           setIsValid(false);
           setData(null);
-          
-          // Show each error as a toast notification
-          validationResult.errors.forEach((error) => {
-            showToast(error, 'error', 5000);
-          });
-          
+
+          // Log errors instead of showing toast
+          console.error('Script validation errors:', validationResult.errors);
+
           throw new Error(
             `Script validation failed:\n${validationResult.errors.map((e) => `• ${e}`).join('\n')}`
           );
@@ -64,7 +60,7 @@ export const useScriptData = (scriptPath: string): ScriptDataResult => {
         setValidationErrors([]);
         setIsValid(true);
         setData(json);
-        showToast(`Script loaded successfully: ${validationResult.stats.totalSections} sections`, 'success', 3000);
+        console.log(`Script loaded successfully: ${validationResult.stats.totalSections} sections`);
 
         // Log stats in development
         if (process.env.NODE_ENV === 'development') {

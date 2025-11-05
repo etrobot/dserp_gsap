@@ -4,11 +4,12 @@ interface UseRecordingOptions {
   onComplete?: (blob: Blob) => void;
   onError?: (error: Error) => void;
   fps?: number;
+  targetElement?: HTMLElement | null;
 }
 
 /**
- * 录制 Hook - 使用屏幕捕获 API (getDisplayMedia)
- * 用户需要手动选择要录制的浏览器标签页/窗口
+ * 录制 Hook - 使用 getDisplayMedia 捕获标签页（含音频）
+ * 用户手动选择要录制的标签页
  */
 export const useRecording = (options: UseRecordingOptions = {}) => {
   const [isRecording, setIsRecording] = useState(false);
@@ -18,59 +19,36 @@ export const useRecording = (options: UseRecordingOptions = {}) => {
 
   const startRecording = useCallback(async () => {
     try {
-      console.log('[Recording] Starting screen capture...');
+      console.log('[Recording] Starting screen and audio capture...');
       
-      // 请求屏幕捕获权限
-      // Mac 用户注意：
-      // 1. 必须选择"Chrome 窗口"（或浏览器窗口）
-      // 2. 不要选"整个屏幕"（会录制其他内容）
-      // 3. 录制期间保持浏览器窗口在最前面
+      // 请求屏幕捕获权限（包含音频）
+      // 用户需要选择"Chrome 标签页"并勾选"分享音频"
       const displayStream = await navigator.mediaDevices.getDisplayMedia({
         video: {
-          width: { ideal: 2560 },
-          height: { ideal: 1440 },
-          frameRate: { ideal: options.fps || 30 }
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          frameRate: { ideal: options.fps || 60 }
         },
-        audio: false,
+        audio: true, // 捕获标签页音频
       } as MediaStreamConstraints);
 
       streamRef.current = displayStream;
 
-      // 监听 track 状态变化
+      // 监听 track 状态
       const videoTrack = displayStream.getVideoTracks()[0];
-      console.log('[Recording] Video track info:', {
-        id: videoTrack.id,
-        label: videoTrack.label,
-        readyState: videoTrack.readyState,
-        enabled: videoTrack.enabled
+      const audioTracks = displayStream.getAudioTracks();
+      
+      console.log('[Recording] Video track:', videoTrack.label);
+      console.log('[Recording] Audio tracks:', audioTracks.length);
+      
+      audioTracks.forEach((track, index) => {
+        console.log(`[Recording] Audio track ${index}:`, track.label);
       });
 
-      // 监听页面可见性变化，提醒用户不要切换窗口
-      const handleVisibilityChange = () => {
-        if (document.hidden) {
-          console.warn('[Recording] ⚠️ 页面不可见！录制可能已暂停或录制了其他内容');
-        } else {
-          console.log('[Recording] ✅ 页面恢复可见');
-        }
-      };
-      document.addEventListener('visibilitychange', handleVisibilityChange);
-
-      // 监听用户停止共享（例如点击浏览器的"停止共享"按钮）
+      // 监听用户停止共享
       videoTrack.onended = () => {
-        console.warn('[Recording] ⚠️ User stopped sharing - auto stopping recording');
-        console.log('[Recording] Track final state:', {
-          readyState: videoTrack.readyState,
-          enabled: videoTrack.enabled
-        });
-        console.log('[Recording] MediaRecorder state:', mediaRecorderRef.current?.state);
-        
-        // 清理监听器
-        document.removeEventListener('visibilitychange', handleVisibilityChange);
-        
-        // 用户主动停止共享时，自动停止录制
-        // 这是正常的用户操作，应该结束录制
+        console.log('[Recording] User stopped sharing');
         if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-          console.log('[Recording] Stopping recording due to user action');
           stopRecording();
         }
       };
@@ -86,7 +64,8 @@ export const useRecording = (options: UseRecordingOptions = {}) => {
       
       const mediaRecorder = new MediaRecorder(displayStream, {
         mimeType,
-        videoBitsPerSecond: 10000000, // 10 Mbps for 2K resolution (2560x1440)
+        videoBitsPerSecond: 5000000, // 5 Mbps for 1280x720
+        audioBitsPerSecond: 128000, // 128 kbps for audio
       });
 
       chunksRef.current = [];
@@ -144,25 +123,21 @@ export const useRecording = (options: UseRecordingOptions = {}) => {
   }, [options]);
 
   const stopRecording = useCallback(() => {
-    console.log('[Recording] Stopping recording...');
-    console.log('[Recording] Current MediaRecorder state:', mediaRecorderRef.current?.state);
-    
+    console.log('[Recording] Stopping...');
+
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-      // 不要在这里立即设置 setIsRecording(false)
-      // 让 onstop 回调来处理状态更新，确保数据处理完成
       mediaRecorderRef.current.stop();
-      console.log('[Recording] MediaRecorder.stop() called, waiting for onstop event...');
-    } else {
-      console.log('[Recording] MediaRecorder is already inactive or null');
-      // 只有当 MediaRecorder 已经是 inactive 状态时才立即更新状态
-      setIsRecording(false);
-      
-      // 清理流
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
-        streamRef.current = null;
-      }
     }
+
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => {
+        console.log('[Recording] Stopping track:', track.kind);
+        track.stop();
+      });
+      streamRef.current = null;
+    }
+
+    setIsRecording(false);
   }, []);
 
   return {

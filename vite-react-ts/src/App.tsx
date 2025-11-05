@@ -3,8 +3,6 @@ import Player from '@/components/Player'
 import Presentation from '@/components/Presentation'
 import { useScriptData } from '@/hooks/useScriptData'
 import { useScriptsList } from '@/hooks/useScriptsList'
-import { ToastProvider } from '@/contexts/ToastContext'
-import { ToastContainer } from '@/components/Toast'
 
 function AppContent() {
   // Read script from URL parameter
@@ -15,27 +13,33 @@ function AppContent() {
   }
 
   const [selectedFile, setSelectedFile] = useState<string>(getInitialScript())
+  
+  // Check if autoplay is enabled
+  const shouldAutoplay = useMemo(() => {
+    const params = new URLSearchParams(window.location.search)
+    return params.get('autoplay') === 'true'
+  }, [])
   const { scripts: scriptsList, loading: listLoading, error: listError } = useScriptsList()
   const { data: scriptData, loading: dataLoading, error: dataError } = useScriptData(
     selectedFile ? `/scripts/${selectedFile}` : ''
   )
 
-  const { pages, subtitleTexts, pageLayouts, pageAudioData } = useMemo(() => {
-    if (!scriptData) return { pages: [], subtitleTexts: [], pageLayouts: [], pageAudioData: [] }
+  const { pages, subtitleTexts, pageLayouts, pageDurations } = useMemo(() => {
+    if (!scriptData) return { pages: [], subtitleTexts: [], pageLayouts: [], pageDurations: [] }
 
     const pagesArr = [] as ReactNode[]
     const subtitleArr = [] as string[]
     const layoutsArr = [] as string[]
-    const audioDataArr: Array<{ sectionId: string; contentItems: Array<{ contentIndex: number; duration?: number }> }> = []
+    const durationsArr: Array<{ sectionId: string; duration?: number }> = []
 
     for (let i = 0; i < scriptData.sections.length; i++) {
       const section = scriptData.sections[i]
       pagesArr.push(
-        <Presentation 
-          key={section.id} 
-          section={section} 
-          index={i} 
-          total={scriptData.sections.length} 
+        <Presentation
+          key={section.id}
+          section={section}
+          index={i}
+          total={scriptData.sections.length}
         />
       )
       // Extract reading text from content array's read_srt field
@@ -43,25 +47,35 @@ function AppContent() {
       const readTexts = section.content
         ?.map(item => item.read_srt)
         .filter(text => text && text.trim().length > 0) || []
-      
+
       subtitleArr.push(readTexts.join(' '))
-      
+
       // Extract layout type
       layoutsArr.push(section.layout || '')
-      
-      // Extract all audio files for this section
-      const contentItems = (section.content || []).map((item, idx) => ({
-        contentIndex: idx,
-        duration: item.duration,
-      }))
-      
-      audioDataArr.push({
+
+      // Extract section duration - use section.duration if available,
+      // otherwise calculate from content array's showtime field (supports showtime per content item)
+      let sectionDuration = section.duration;
+
+      if (!sectionDuration || sectionDuration <= 0) {
+        // Calculate duration from content showtime values
+        // This allows different showtime per content item (for animations, transitions, etc.)
+        const showtimeSum = section.content?.reduce((sum, item) => {
+          return sum + (item.showtime || 0);
+        }, 0) || 0;
+
+        if (showtimeSum > 0) {
+          sectionDuration = showtimeSum;
+        }
+      }
+
+      durationsArr.push({
         sectionId: section.id,
-        contentItems,
+        duration: sectionDuration,
       })
     }
 
-    return { pages: pagesArr, subtitleTexts: subtitleArr, pageLayouts: layoutsArr, pageAudioData: audioDataArr }
+    return { pages: pagesArr, subtitleTexts: subtitleArr, pageLayouts: layoutsArr, pageDurations: durationsArr }
   }, [scriptData])
 
   // Show loading state
@@ -92,23 +106,19 @@ function AppContent() {
       pages={pages} 
       subtitleTexts={subtitleTexts}
       pageLayouts={pageLayouts}
-      pageAudioData={pageAudioData}
+      pageDurations={pageDurations}
       scriptFiles={scriptsList?.files || []}
       currentScript={selectedFile}
       onScriptChange={setSelectedFile}
       defaultLanguage={scriptData?.language || 'zh-CN'}
       scriptName={selectedFile?.replace('.json', '') || ''}
+      autoplay={shouldAutoplay}
     />
   )
 }
 
 function App() {
-  return (
-    <ToastProvider>
-      <AppContent />
-      <ToastContainer />
-    </ToastProvider>
-  )
+  return <AppContent />
 }
 
 export default App
