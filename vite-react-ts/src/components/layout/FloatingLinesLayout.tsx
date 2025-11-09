@@ -10,7 +10,7 @@ interface FloatingLinesLayoutProps {
 
 const FloatingLinesLayout = ({ section, index, total }: FloatingLinesLayoutProps) => {
   const lines = section.content?.map(item => item.data?.title || '').filter(Boolean) || [];
-  const durations = section.content?.map(item => item.duration) || [];
+  const durations = section.content?.map(item => item.duration || item.showtime || 2) || [];
   
   return (
     <div className="w-full h-full flex flex-col items-center justify-center relative px-8 pt-8 pb-8">

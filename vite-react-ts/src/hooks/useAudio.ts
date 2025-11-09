@@ -66,8 +66,11 @@ export function useAudio() {
           return;
         }
 
-        // 停止之前的语音
-        window.speechSynthesis.cancel();
+        console.log(`[useAudio] speakWithBrowserAPI called, text: "${text.substring(0, 50)}...", lang: ${lang}`);
+        console.log(`[useAudio] speechSynthesis.speaking: ${window.speechSynthesis.speaking}, pending: ${window.speechSynthesis.pending}`);
+
+        // 不再自动调用 cancel()，让调用者在需要时显式调用 stop()
+        // 这样可以支持连续播放多个语音而不会互相取消
 
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = lang;
@@ -75,26 +78,46 @@ export function useAudio() {
         utterance.pitch = 1.0;
         utterance.volume = 1.0;
 
+        const handleStart = () => {
+          console.log(`[useAudio] TTS started`);
+        };
+
         const handleEnd = () => {
+          console.log(`[useAudio] TTS ended`);
           setIsSpeaking(false);
           options?.onEnd?.();
           resolve();
         };
 
         const handleError = (event: SpeechSynthesisErrorEvent) => {
+          console.error(`[useAudio] TTS error: ${event.error}`);
           setIsSpeaking(false);
+          // 忽略 canceled 错误（这是正常的页面切换）
+          if (event.error === 'canceled') {
+            console.log('[useAudio] TTS canceled (normal page transition)');
+            resolve(); // 不作为错误处理
+            return;
+          }
           const error = new Error(`语音合成错误: ${event.error}`);
           options?.onError?.(error);
           reject(error);
         };
 
+        utterance.onstart = handleStart;
         utterance.onend = handleEnd;
         utterance.onerror = handleError;
 
         setIsSpeaking(true);
         utteranceRef.current = utterance;
+        console.log(`[useAudio] Calling window.speechSynthesis.speak()`);
         window.speechSynthesis.speak(utterance);
+        
+        // 检查是否真的加入队列
+        setTimeout(() => {
+          console.log(`[useAudio] After 100ms - speaking: ${window.speechSynthesis.speaking}, pending: ${window.speechSynthesis.pending}`);
+        }, 100);
       } catch (error) {
+        console.error(`[useAudio] Exception in speakWithBrowserAPI:`, error);
         setIsSpeaking(false);
         const err = new Error(`语音合成异常: ${error instanceof Error ? error.message : String(error)}`);
         options?.onError?.(err);

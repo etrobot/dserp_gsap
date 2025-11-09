@@ -17,39 +17,42 @@ export function useSpeechWithFallback() {
    */
   const speak = useCallback(async (text: string, options: SpeechOptions = {}) => {
     setError(null);
-    const { audioFile, lang = 'zh-TW', onEnd, onError } = options;
+    const { audioFile, lang = 'zh-CN', onEnd, onError } = options;
 
-    try {
-      // 如果提供了音频文件路径，优先使用
-      if (audioFile) {
-        try {
-          await playAudio(audioFile, {
-            onEnd,
-            onError: (err) => {
-              console.warn(`本地音频播放失败: ${err.message}，切换到浏览器 TTS`);
-              // 音频播放失败，切换到浏览器 TTS
-              speakWithBrowserAPI(text, lang, { onEnd, onError }).catch((e) => {
-                setError(e);
-                onError?.(e);
-              });
-            },
-          });
-          return;
-        } catch (err) {
-          console.warn(`本地音频播放异常: ${err}，切换到浏览器 TTS`);
-          // 继续使用浏览器 TTS
-        }
+    // 如果提供了音频文件路径，优先尝试使用
+    if (audioFile) {
+      try {
+        console.log(`[useSpeechWithFallback] 尝试播放音频文件: ${audioFile}`);
+        await playAudio(audioFile, {
+          onEnd,
+          onError: (err) => {
+            console.warn(`本地音频播放失败: ${err.message}`);
+            // 不在这里处理，让它抛出异常
+          },
+        });
+        console.log(`[useSpeechWithFallback] 音频播放成功`);
+        return; // 音频播放成功，直接返回
+      } catch (err) {
+        console.warn(`[useSpeechWithFallback] 音频播放失败，切换到浏览器 TTS`);
+        console.warn(`[useSpeechWithFallback] 错误详情:`, err);
+        // 继续执行下面的 TTS fallback
       }
+    }
 
-      // 降级到浏览器 TTS
+    // 使用浏览器 TTS（要么没有音频文件，要么音频播放失败）
+    console.log(`[useSpeechWithFallback] 使用浏览器 TTS, text: "${text.substring(0, 50)}...", lang: ${lang}`);
+    try {
       await speakWithBrowserAPI(text, lang, {
         onEnd,
         onError: (err) => {
+          console.error(`[useSpeechWithFallback] TTS 错误:`, err);
           setError(err);
           onError?.(err);
         },
       });
+      console.log(`[useSpeechWithFallback] TTS 播放完成`);
     } catch (err) {
+      console.error(`[useSpeechWithFallback] TTS 异常:`, err);
       const error = err instanceof Error ? err : new Error(String(err));
       setError(error);
       onError?.(error);

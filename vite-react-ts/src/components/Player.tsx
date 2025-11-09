@@ -11,6 +11,14 @@ interface PageDuration {
   duration?: number; // 页面显示时长（秒）
 }
 
+interface PageContentItem {
+  text: string;
+  audioFile?: string;
+  showtime?: number;
+  sectionId?: string;
+  contentIndex?: number;
+}
+
 interface PlayerProps {
   pages: ReactNode[];
   subtitleTexts?: string[];
@@ -21,13 +29,13 @@ interface PlayerProps {
   pageLayouts?: string[];
   defaultLanguage?: string; // 从 JSON 读取的默认语言
   pageDurations?: PageDuration[]; // 每页的显示时长
+  pageContents?: PageContentItem[][]; // 每页的内容项数组，用于顺序播放
   scriptName?: string; // 脚本名称，用于构建音频路径
   autoplay?: boolean; // 是否自动播放
 }
 
 const Player: React.FC<PlayerProps> = ({
   pages,
-  subtitleTexts = [],
   className = '',
   scriptFiles = [],
   currentScript = '',
@@ -35,12 +43,14 @@ const Player: React.FC<PlayerProps> = ({
   pageLayouts = [],
   defaultLanguage = 'zh-CN',
   pageDurations = [],
+  pageContents = [],
   scriptName = '',
   autoplay = false
 }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [inputPage, setInputPage] = useState('1');
   const [language, setLanguage] = useState<string>(defaultLanguage);
+  const [isPlaying, setIsPlaying] = useState(false); // 本地播放状态，用于按钮显示
   const totalPages = pages.length;
 
   // 检测是否为录制模式（通过 URL 参数）
@@ -48,116 +58,10 @@ const Player: React.FC<PlayerProps> = ({
     const params = new URLSearchParams(window.location.search);
     return params.get('recording') === 'true';
   }, []);
-  const { speak: speakWithDefault, stop: stopDefault } = useSpeech();
+  const { stop: stopDefault } = useSpeech();
   const { speak: speakWithFallback, stop: stopFallback, isSpeaking } = useSpeechWithFallback();
-  
-  // 动态生成音频文件路径：/tts/脚本名/section-id-索引.wav
-  const getAudioPath = useCallback((sectionId: string, contentIndex: number) => {
-    if (!scriptName) return null;
-    const filename = `${sectionId}-${String(contentIndex + 1).padStart(2, '0')}.wav`;
-    return `/tts/${scriptName}/${filename}`;
-  }, [scriptName]);
 
-  // 页面播放函数 - 基于 section.duration 或 content.showtime，支持预生成音频和 TTS
-  const speakPage = useCallback((
-    pageDuration: PageDuration | undefined,
-    text: string,
-    lang: string,
-    onEnd?: () => void,
-    onError?: (error: string) => void,
-    onTimerEnd?: () => void  // 新增：定时器结束回调（用于录制模式）
-  ) => {
-    // 检测是否为无头模式或自动播放模式
-    const isHeadless = !window.speechSynthesis || navigator.webdriver;
 
-    console.log(`[Player] speakPage: pageDuration=`, pageDuration, `autoplay=${autoplay}, isHeadless=${isHeadless}`);
-
-    let duration = pageDuration?.duration;
-
-    if (!duration) {
-      // 如果没有设置 duration，根据文本长度估算
-      duration = Math.max(2, text.length * 0.1); // 每个字符约0.1秒，最少2秒
-      console.log(`[Player] No duration found, estimated ${duration}s from text length ${text.length}`);
-    }
-
-    // 尝试获取预生成的音频文件
-    const audioPath = pageDuration?.sectionId ? getAudioPath(pageDuration.sectionId, 0) : null;
-
-    if (isHeadless || autoplay) {
-      // 无头/自动播放模式：基于时间的页面切换（跳过音频播放）
-      const durationMs = duration * 1000;
-      console.log(`[Player] Autoplay mode: page will display for ${duration}s (${durationMs}ms)`);
-      console.log(`[Player] Setting up page timer with timeout: ${durationMs}ms`);
-      console.log(`[Player] Audio playback skipped in recording mode`);
-
-      // 启动基于时间的页面切换定时器
-      const pageTimer = setTimeout(() => {
-        console.log(`[Player] 🔔 Page timer completed after ${duration}s (timeout fired)`);
-        // 在录制模式下，使用 onTimerEnd 而不是 onEnd
-        onTimerEnd?.();
-        onEnd?.();
-      }, durationMs);
-
-      console.log(`[Player] Page timer created with ID:`, pageTimer);
-
-      // 返回清理函数
-      return () => {
-        console.log(`[Player] Clearing page timer`);
-        clearTimeout(pageTimer);
-      };
-    }
-
-    // 有头模式：使用音频/TTS 控制页面切换
-    console.log(`[Player] Interactive mode: Audio/TTS will control page timing`);
-
-    if (audioPath) {
-      // 优先使用预生成的音频文件
-      console.log(`[Player] Using pre-generated audio: ${audioPath}`);
-      return speakWithFallback(text, {
-        audioFile: audioPath,
-        lang,
-        onEnd,
-        onError: (err) => {
-          console.log(`[Player] Audio playback failed:`, err);
-          onError?.(err.message);
-        },
-      });
-    } else {
-      // 回退到 TTS
-      console.log(`[Player] No pre-generated audio, using TTS`);
-      return speakWithDefault(text, { onEnd, onError }, { lang });
-    }
-  }, [speakWithDefault, speakWithFallback, autoplay, getAudioPath]);
-
-  // 使用新的 speak 和 stop，支持本地音频和 TTS 备用方案
-  const speak = useCallback((text: string, options: Record<string, unknown>, voiceOptions?: Record<string, unknown>, pageIndex?: number) => {
-    const idx = pageIndex !== undefined ? pageIndex : currentPage;
-    const pageDuration = pageDurations[idx];
-    const lang = (voiceOptions?.lang as string) || language;
-
-    console.log(`[Player] speak called for pageIndex=${idx}, pageDuration=`, pageDuration);
-
-    // 检测是否为无头模式或自动播放模式
-    const isHeadless = !window.speechSynthesis || navigator.webdriver;
-
-    // 避免在无头/自动播放模式下调用清理函数
-    const result = speakPage(
-      pageDuration,
-      text,
-      lang,
-      options?.onEnd as (() => void) | undefined,
-      options?.onError ? (error: string) => (options.onError as (error: Error) => void)(new Error(error)) : undefined,
-      // 在录制模式下，提供 onTimerEnd 回调
-      isHeadless || autoplay ? (options?.onEnd as (() => void) | undefined) : undefined
-    );
-
-    // 在无头或自动播放模式下，不返回清理函数，避免清理页面切换定时器
-    if (isHeadless || autoplay) {
-      return undefined;
-    }
-
-    return result;
-  }, [currentPage, pageDurations, language, speakPage, autoplay]);
   
   const stop = useCallback(() => {
     stopDefault();
@@ -218,17 +122,50 @@ const Player: React.FC<PlayerProps> = ({
     goToPage(currentPage + 1);
   }, [currentPage, goToPage]);
 
-  const extractPageText = useCallback((pageIndex: number): string => {
-    // Use subtitle text if available, otherwise extract from DOM
-    if (subtitleTexts[pageIndex]) {
-      const text = subtitleTexts[pageIndex];
-      console.log(`[Player] Page ${pageIndex + 1} text:`, text.substring(0, 100) + '...');
-      return text;
+
+  // 顺序播放页面内的 content items
+  const speakContentItemsSequentially = useCallback((
+    pageIndex: number,
+    contentIndex: number
+  ) => {
+    const contentItems = pageContents[pageIndex] || [];
+    
+    if (contentIndex >= contentItems.length || !isSpeakingRef.current) {
+      // 所有 content items 播放完成或被停止
+      return;
     }
-    if (!contentRef.current) return '';
-    const paragraphs = contentRef.current.querySelectorAll('p');
-    return Array.from(paragraphs).map(p => p.textContent || '').join(' ');
-  }, [subtitleTexts]);
+
+    const item = contentItems[contentIndex];
+    const pageDurationData = pageDurations[pageIndex];
+    
+    // 构建音频文件路径
+    let audioPath = item.audioFile;
+    if (!audioPath && pageDurationData?.sectionId && scriptName) {
+      audioPath = `/tts/${scriptName}/${pageDurationData.sectionId}-${String(contentIndex + 1).padStart(2, '0')}.wav`;
+    }
+
+    console.log(`[Player] 🎤 Speaking content item ${contentIndex + 1}/${contentItems.length} on page ${pageIndex + 1}`);
+
+    // 使用 speakWithFallback 播放（支持音频文件 fallback 到 TTS）
+    speakWithFallback(item.text, {
+      audioFile: audioPath || undefined,
+      lang: language,
+      onEnd: () => {
+        console.log(`[Player] ✅ Finished content item ${contentIndex + 1}/${contentItems.length}`);
+        // 播放下一个 content item
+        if (isSpeakingRef.current) {
+          speakContentItemsSequentially(pageIndex, contentIndex + 1);
+        }
+      },
+      onError: (err) => {
+        console.error(`[Player] ❌ Error on content item ${contentIndex + 1}:`, err);
+        // 即使出错也继续下一个
+        if (isSpeakingRef.current) {
+          speakContentItemsSequentially(pageIndex, contentIndex + 1);
+        }
+      }
+    });
+  }, [pageContents, pageDurations, scriptName, language, speakWithFallback]);
 
   const speakContinuous = useCallback((startPageIndex: number) => {
     console.log(`[Player] speakContinuous called for page ${startPageIndex + 1}/${totalPages}, isSpeaking:`, isSpeakingRef.current);
@@ -241,6 +178,7 @@ const Player: React.FC<PlayerProps> = ({
     if (startPageIndex >= totalPages || !isSpeakingRef.current) {
       console.log(`[Player] Stopping: reached end (${startPageIndex >= totalPages}) or speaking stopped (!${isSpeakingRef.current})`);
       isSpeakingRef.current = false;
+      setIsPlaying(false); // 重置按钮状态
       if (timerRef.current) clearInterval(timerRef.current);
       // 设置播放完成标志
       if (typeof window !== 'undefined') {
@@ -261,75 +199,54 @@ const Player: React.FC<PlayerProps> = ({
     setInputPage(String(startPageIndex + 1));
     console.log(`[Player] ✅ Switched to page ${startPageIndex + 1}/${totalPages}`);
 
+    // 停止之前的 TTS
+    stop();
+
     setTimeout(() => {
-      const text = extractPageText(startPageIndex);
       const pageDurationData = pageDurations[startPageIndex];
-      const duration = pageDurationData?.duration || 0;
+      const duration = pageDurationData?.duration || 5;
+      const contentItems = pageContents[startPageIndex] || [];
 
-      console.log(`[Player] 📄 Page ${startPageIndex + 1}: text length=${text.length}, duration=${duration}s, sectionId=${pageDurationData?.sectionId}`);
+      console.log(`[Player] 📄 Page ${startPageIndex + 1}: ${contentItems.length} content items, duration=${duration}s, sectionId=${pageDurationData?.sectionId}`);
 
-      if (!text || !text.trim()) {
-        console.log(`[Player] ⚠️ No text for page ${startPageIndex + 1}, skipping to next`);
-        // 即使没有文本也继续下一页
-        if (isSpeakingRef.current && startPageIndex < totalPages - 1) {
-          speakContinuous(startPageIndex + 1);
-        } else {
-          isSpeakingRef.current = false;
-          if (timerRef.current) clearInterval(timerRef.current);
-          // 设置播放完成标志
-          if (typeof window !== 'undefined') {
-            (window as any).__playbackCompleted = true;
-          }
-        }
-        return;
+      // 开始按顺序播放该页面的 content items
+      if (contentItems.length > 0) {
+        speakContentItemsSequentially(startPageIndex, 0);
       }
 
-      console.log(`[Player] 🎤 Speaking page ${startPageIndex + 1}/${totalPages} (estimated ${duration}s)`);
-      speak(text, {
-        onEnd: () => {
-          console.log(`[Player] ✅ Finished speaking page ${startPageIndex + 1}/${totalPages}`);
-
-          if (isSpeakingRef.current && startPageIndex < totalPages - 1) {
-            console.log(`[Player] ➡️  Moving to next page: ${startPageIndex + 2}/${totalPages}`);
-            speakContinuous(startPageIndex + 1);
-          } else {
-            console.log(`[Player] 🏁 Reached end of presentation (page ${startPageIndex + 1}/${totalPages})`);
-            isSpeakingRef.current = false;
-            if (timerRef.current) clearInterval(timerRef.current);
-            // 设置播放完成标志
-            if (typeof window !== 'undefined') {
-              (window as any).__playbackCompleted = true;
-            }
-            // Auto stop recording when speech ends (only if it was auto-started)
-            if (isRecording && shouldRecordRef.current) {
-              console.log(`[Player] ✅ Auto-stopping recording after completion`);
-              stopRecording();
-              setShouldRecord(false);
-              shouldRecordRef.current = false;
-            }
-          }
-        },
-        onError: (error: SpeechSynthesisErrorEvent) => {
-          console.error('[Player] ❌ Speech error on page', startPageIndex + 1, ':', error);
+      // 根据 duration 设置页面切换定时器
+      const pageTimer = setTimeout(() => {
+        console.log(`[Player] ⏰ Page ${startPageIndex + 1} duration (${duration}s) completed`);
+        
+        if (isSpeakingRef.current && startPageIndex < totalPages - 1) {
+          console.log(`[Player] ➡️  Moving to next page: ${startPageIndex + 2}/${totalPages}`);
+          speakContinuous(startPageIndex + 1);
+        } else {
+          console.log(`[Player] 🏁 Reached end of presentation`);
           isSpeakingRef.current = false;
+          setIsPlaying(false); // 重置按钮状态
           if (timerRef.current) clearInterval(timerRef.current);
-          // 设置播放完成标志（出错时也要设置，避免无限等待）
           if (typeof window !== 'undefined') {
             (window as any).__playbackCompleted = true;
           }
-          // Auto stop recording on error (only if it was auto-started)
           if (isRecording && shouldRecordRef.current) {
+            console.log(`[Player] ✅ Auto-stopping recording after completion`);
             stopRecording();
             setShouldRecord(false);
             shouldRecordRef.current = false;
           }
-        },
-      }, { lang: language }, startPageIndex);
+        }
+      }, duration * 1000);
+
+      // 保存定时器引用
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = pageTimer as any;
     }, 100);
-  }, [extractPageText, speak, totalPages, isRecording, stopRecording, shouldRecord, language, pageDurations]);
+  }, [pageContents, pageDurations, totalPages, isRecording, stopRecording, shouldRecord, stop, speakContentItemsSequentially]);
 
   const handlePlayAudio = useCallback(() => {
     isSpeakingRef.current = true;
+    setIsPlaying(true); // 立即更新按钮状态
     speakStartTimeRef.current = Date.now();
     setElapsedTime(0);
     
@@ -365,6 +282,7 @@ const Player: React.FC<PlayerProps> = ({
     
     // Then start speech
     isSpeakingRef.current = true;
+    setIsPlaying(true); // 立即更新按钮状态
     speakStartTimeRef.current = Date.now();
     setElapsedTime(0);
     
@@ -379,6 +297,7 @@ const Player: React.FC<PlayerProps> = ({
 
   const handleStopAudio = useCallback(() => {
     isSpeakingRef.current = false;
+    setIsPlaying(false); // 立即更新按钮状态
     if (timerRef.current) clearInterval(timerRef.current);
     stop();
     // Stop recording immediately when user clicks stop
@@ -576,7 +495,7 @@ const Player: React.FC<PlayerProps> = ({
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
-            disabled={isSpeaking}
+            disabled={isPlaying}
             className="px-4 py-2 bg-gray-700 text-white rounded border border-gray-600 hover:bg-gray-600 focus:outline-none focus:border-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <option value="zh-CN">🇨🇳 中文</option>
@@ -597,17 +516,17 @@ const Player: React.FC<PlayerProps> = ({
           </button>
 
           <button
-            onClick={isSpeaking ? handleStopAudio : handlePlayAudio}
+            onClick={isPlaying ? handleStopAudio : handlePlayAudio}
             disabled={isRecording}
             className={`px-4 py-2 rounded text-white transition-colors ${
-              isSpeaking && !isRecording
+              isPlaying && !isRecording
                 ? 'bg-red-600 hover:bg-red-500'
                 : 'bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed'
             }`}
           >
             {elapsedTime > 0 && !isRecording
               ? formatTime(elapsedTime)
-              : '▶ 朗读'
+              : '▶ 播放'
             }
           </button>
 
@@ -628,7 +547,7 @@ const Player: React.FC<PlayerProps> = ({
             )}
             {elapsedTime > 0 && isRecording
               ? formatTime(elapsedTime)
-              : '⬤ 朗读并录制'
+              : '⬤ 播放并录制'
             }
           </button>
 

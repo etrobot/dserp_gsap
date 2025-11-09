@@ -7,6 +7,7 @@ export type featureContent = {
   };
   read_srt: string;
   showtime?: number; // 每个动画项的显示时间（秒）
+  duration?: number; // 别名，与 showtime 相同含义（向后兼容）
   audioFile?: string; // TTS 生成的音频文件名
 };
 

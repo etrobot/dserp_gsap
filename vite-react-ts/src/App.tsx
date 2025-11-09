@@ -24,13 +24,14 @@ function AppContent() {
     selectedFile ? `/scripts/${selectedFile}` : ''
   )
 
-  const { pages, subtitleTexts, pageLayouts, pageDurations } = useMemo(() => {
-    if (!scriptData) return { pages: [], subtitleTexts: [], pageLayouts: [], pageDurations: [] }
+  const { pages, subtitleTexts, pageLayouts, pageDurations, pageContents } = useMemo(() => {
+    if (!scriptData) return { pages: [], subtitleTexts: [], pageLayouts: [], pageDurations: [], pageContents: [] }
 
     const pagesArr = [] as ReactNode[]
     const subtitleArr = [] as string[]
     const layoutsArr = [] as string[]
     const durationsArr: Array<{ sectionId: string; duration?: number }> = []
+    const contentsArr: Array<Array<{ text: string; audioFile?: string; showtime?: number }>> = []
 
     for (let i = 0; i < scriptData.sections.length; i++) {
       const section = scriptData.sections[i]
@@ -49,6 +50,17 @@ function AppContent() {
         .filter(text => text && text.trim().length > 0) || []
 
       subtitleArr.push(readTexts.join(' '))
+
+      // Extract content items for sequential reading
+      const contentItems = section.content?.map((item, idx) => ({
+        text: item.read_srt || '',
+        audioFile: item.audioFile,
+        showtime: item.showtime,
+        sectionId: section.id,
+        contentIndex: idx
+      })).filter(item => item.text && item.text.trim().length > 0) || []
+
+      contentsArr.push(contentItems as any)
 
       // Extract layout type
       layoutsArr.push(section.layout || '')
@@ -75,7 +87,7 @@ function AppContent() {
       })
     }
 
-    return { pages: pagesArr, subtitleTexts: subtitleArr, pageLayouts: layoutsArr, pageDurations: durationsArr }
+    return { pages: pagesArr, subtitleTexts: subtitleArr, pageLayouts: layoutsArr, pageDurations: durationsArr, pageContents: contentsArr }
   }, [scriptData])
 
   // Show loading state
@@ -107,6 +119,7 @@ function AppContent() {
       subtitleTexts={subtitleTexts}
       pageLayouts={pageLayouts}
       pageDurations={pageDurations}
+      pageContents={pageContents}
       scriptFiles={scriptsList?.files || []}
       currentScript={selectedFile}
       onScriptChange={setSelectedFile}
