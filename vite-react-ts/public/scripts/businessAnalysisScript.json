@@ -1,0 +1,546 @@
+{
+  "title": "业务分类统计分析报告",
+  "language": "zh-CN",
+  "sections": [
+    {
+      "id": "cover",
+      "title": "业务分类统计分析报告",
+      "illustration": "📊",
+      "layout": "cover",
+      "content": [
+        {
+          "data": {
+            "description": "基于trustmrr.csv文件数据的深度分析"
+          },
+          "read_srt": "业务分类统计分析报告，基于trust M R R点C S V文件数据的深度分析。",
+          "showtime": 4
+        }
+      ],
+      "duration": 4
+    },
+    {
+      "id": "summary",
+      "title": "核心摘要",
+      "illustration": "📋",
+      "layout": "two_cols",
+      "content": [
+        {
+          "data": {
+            "title": "SaaS工具主导地位",
+            "description": "39个产品，占据57.4%收入占比",
+            "icon": "🏆"
+          },
+          "read_srt": "本报告基于trust M R R点C S V文件数据，对业务分类特征、收入分布规律进行了深入分析。数据显示SaaS工具类别在产品数量和总收入方面占据主导地位。",
+          "showtime": 8
+        },
+        {
+          "data": {
+            "title": "健康医疗表现突出",
+            "description": "仅1个产品，MRR占比达32.9%",
+            "icon": "💊"
+          },
+          "read_srt": "而健康医疗类别虽然只有1个产品，但在月度经常性收入方面表现突出，占比高达32.9%，展现出极强的收入稳定性。",
+          "showtime": 7
+        },
+        {
+          "data": {
+            "title": "AI技术发展潜力",
+            "description": "收入占比6.9%，MRR贡献14.6%",
+            "icon": "🤖"
+          },
+          "read_srt": "AI技术类别虽然收入占比仅为6.9%，但在M R R贡献上达到14.6%，显示出良好的发展潜力。",
+          "showtime": 6
+        },
+        {
+          "data": {
+            "title": "多元化业务布局",
+            "description": "9大类别覆盖主流市场",
+            "icon": "🎯"
+          },
+          "read_srt": "通过对各类别业务特征和收入模式的分析，报告进一步推理了潜在的创新方向。",
+          "showtime": 5
+        }
+      ],
+      "duration": 26
+    },
+    {
+      "id": "key_findings",
+      "title": "关键发现",
+      "illustration": "🔍",
+      "layout": "one_col",
+      "content": [
+        {
+          "data": {
+            "title": "SaaS工具绝对主导",
+            "description": "39个产品，57.4%收入占比",
+            "icon": "💼"
+          },
+          "read_srt": "SaaS工具类别以39个产品数量和57.4%的收入占比成为绝对主导业务类型。",
+          "showtime": 5
+        },
+        {
+          "data": {
+            "title": "健康医疗高收入稳定性",
+            "description": "1个产品，MRR占比32.9%",
+            "icon": "❤️"
+          },
+          "read_srt": "健康医疗类别虽然仅有1个产品，但其M R R占比高达32.9%，展现出极强的收入稳定性。",
+          "showtime": 6
+        },
+        {
+          "data": {
+            "title": "AI技术良好潜力",
+            "description": "收入6.9%，MRR贡献14.6%",
+            "icon": "🚀"
+          },
+          "read_srt": "AI技术类别虽然收入占比仅为6.9%，但在M R R贡献上达到14.6%，显示出良好的发展潜力。",
+          "showtime": 6
+        },
+        {
+          "data": {
+            "title": "多元业务有贡献",
+            "description": "开发服务、电子商务稳步发展",
+            "icon": "📈"
+          },
+          "read_srt": "开发服务、电子商务等类别虽然产品数量较少，但仍有一定的收入贡献。",
+          "showtime": 5
+        }
+      ],
+      "duration": 22
+    },
+    {
+      "id": "category_distribution",
+      "title": "业务分类特征分析",
+      "illustration": "📊",
+      "layout": "two_cols",
+      "content": [
+        {
+          "data": {
+            "title": "SaaS工具",
+            "description": "39个产品 (38.6%)",
+            "icon": "💻"
+          },
+          "read_srt": "根据数据统计，我们将业务分为9个主要类别。SaaS工具类别占据了近40%的产品数量，反映出当前市场对软件即服务解决方案的强劲需求。",
+          "showtime": 7
+        },
+        {
+          "data": {
+            "title": "其他",
+            "description": "27个产品 (26.7%)",
+            "icon": "📦"
+          },
+          "read_srt": "其他类别产品数量27个，占比26.7%。",
+          "showtime": 3
+        },
+        {
+          "data": {
+            "title": "AI技术",
+            "description": "17个产品 (16.8%)",
+            "icon": "🤖"
+          },
+          "read_srt": "AI技术类别以16.8%的产品数量占比位居第二，显示出人工智能技术在各行业的广泛应用。",
+          "showtime": 6
+        },
+        {
+          "data": {
+            "title": "营销广告",
+            "description": "5个产品 (5.0%)",
+            "icon": "📣"
+          },
+          "read_srt": "营销广告类别有5个产品，占比5%。",
+          "showtime": 3
+        },
+        {
+          "data": {
+            "title": "开发服务",
+            "description": "3个产品 (3.0%)",
+            "icon": "⚙️"
+          },
+          "read_srt": "开发服务类别有3个产品。",
+          "showtime": 2
+        },
+        {
+          "data": {
+            "title": "教育培训",
+            "description": "3个产品 (3.0%)",
+            "icon": "🎓"
+          },
+          "read_srt": "教育培训类别有3个产品。",
+          "showtime": 2
+        },
+        {
+          "data": {
+            "title": "电子商务",
+            "description": "4个产品 (4.0%)",
+            "icon": "🛒"
+          },
+          "read_srt": "电子商务类别有4个产品。",
+          "showtime": 2
+        },
+        {
+          "data": {
+            "title": "健康医疗",
+            "description": "1个产品 (1.0%)",
+            "icon": "💊"
+          },
+          "read_srt": "健康医疗类别虽然仅有1个产品。",
+          "showtime": 2
+        },
+        {
+          "data": {
+            "title": "商业服务",
+            "description": "1个产品 (1.0%)",
+            "icon": "🏢"
+          },
+          "read_srt": "商业服务类别有1个产品。",
+          "showtime": 2
+        }
+      ],
+      "duration": 29
+    },
+    {
+      "id": "revenue_chart",
+      "title": "各类别收入占比",
+      "illustration": "🥧",
+      "layout": "chart",
+      "chartPath": "/chart/businessAnalysisScript/revenueDistribution.json",
+      "content": [
+        {
+          "read_srt": "从收入分布来看，SaaS工具类别以57.4%的收入占比遥遥领先，这与其在产品数量上的优势相匹配。",
+          "showtime": 6
+        },
+        {
+          "read_srt": "值得注意的是，健康医疗类别虽然仅有1个产品，但其收入占比达到了6.9%，与AI技术和电子商务类别相当，显示出该领域单个产品的高收入潜力。",
+          "showtime": 8
+        }
+      ],
+      "duration": 14
+    },
+    {
+      "id": "mrr_chart",
+      "title": "各类别MRR对比",
+      "illustration": "📊",
+      "layout": "chart",
+      "chartPath": "/chart/businessAnalysisScript/mrrComparison.json",
+      "content": [
+        {
+          "read_srt": "M R R数据揭示了不同业务类别的收入稳定性特征。健康医疗类别以103万2千美元的M R R和32.9%的M R R占比表现最为突出。",
+          "showtime": 8
+        },
+        {
+          "read_srt": "显示出该领域产品具有极高的客户留存率和收入稳定性。SaaS工具类别虽然在总收入上领先，但在M R R占比上为40.2%，略低于其收入占比。",
+          "showtime": 8
+        }
+      ],
+      "duration": 16
+    },
+    {
+      "id": "innovation_directions",
+      "title": "创新方向推理",
+      "illustration": "💡",
+      "layout": "one_col",
+      "content": [
+        {
+          "data": {
+            "title": "SaaS与AI深度融合",
+            "description": "智能分析、自动化决策的新一代产品",
+            "icon": "🔗"
+          },
+          "read_srt": "基于分析，我们推理出以下创新方向。第一，SaaS工具与AI技术的深度融合。将AI技术深度融合到SaaS工具中，开发具有智能分析、自动化决策等功能的新一代SaaS产品。",
+          "showtime": 10
+        },
+        {
+          "data": {
+            "title": "健康医疗领域扩展",
+            "description": "细分领域健康管理、远程医疗",
+            "icon": "🏥"
+          },
+          "read_srt": "第二，健康医疗领域的扩展与深化。健康医疗领域存在巨大的市场需求和商业潜力，可以考虑进一步扩展健康医疗产品线，开发针对不同细分领域的解决方案。",
+          "showtime": 10
+        },
+        {
+          "data": {
+            "title": "提升客户留存率",
+            "description": "优化体验、增强客户成功管理",
+            "icon": "🎯"
+          },
+          "read_srt": "第三，提升SaaS产品的客户留存率。可以通过优化产品体验、增强客户成功管理、提供更具价值的增值服务等方式，提升收入稳定性。",
+          "showtime": 9
+        },
+        {
+          "data": {
+            "title": "开发服务产品化",
+            "description": "可复用解决方案和工具",
+            "icon": "🔧"
+          },
+          "read_srt": "第四，开发服务的产品化转型。将开发服务进行产品化转型，开发可复用的解决方案和工具，提高收入的可预测性和稳定性。",
+          "showtime": 8
+        },
+        {
+          "data": {
+            "title": "跨类别业务模式创新",
+            "description": "订阅+交易、AI+专业服务",
+            "icon": "🌐"
+          },
+          "read_srt": "第五，跨类别业务模式创新。例如将SaaS的订阅模式与电子商务的交易模式相结合，或将AI技术的智能化能力与健康医疗的专业服务相结合，创造新的业务增长点。",
+          "showtime": 10
+        }
+      ],
+      "duration": 47
+    },
+    {
+      "id": "saas_ai_fusion",
+      "title": "创新方向一：SaaS与AI融合",
+      "illustration": "🤝",
+      "layout": "two_cols",
+      "content": [
+        {
+          "data": {
+            "title": "市场基础扎实",
+            "description": "SaaS主导地位+AI发展潜力",
+            "icon": "📊"
+          },
+          "read_srt": "SaaS工具类别在产品数量和总收入上占据主导地位，而AI技术类别在M R R贡献上表现出良好潜力。",
+          "showtime": 6
+        },
+        {
+          "data": {
+            "title": "智能分析能力",
+            "description": "数据洞察、预测分析",
+            "icon": "🔍"
+          },
+          "read_srt": "将AI技术深度融合到SaaS工具中，可以提供智能分析和数据洞察能力。",
+          "showtime": 5
+        },
+        {
+          "data": {
+            "title": "自动化决策",
+            "description": "减少人工干预、提升效率",
+            "icon": "⚡"
+          },
+          "read_srt": "开发具有自动化决策功能的新一代SaaS产品，减少人工干预。",
+          "showtime": 5
+        },
+        {
+          "data": {
+            "title": "竞争力提升",
+            "description": "显著提升产品竞争力和收入稳定性",
+            "icon": "🚀"
+          },
+          "read_srt": "这将显著提升产品的竞争力和收入稳定性。",
+          "showtime": 4
+        }
+      ],
+      "duration": 20
+    },
+    {
+      "id": "healthcare_expansion",
+      "title": "创新方向二：健康医疗扩展",
+      "illustration": "🏥",
+      "layout": "two_cols",
+      "content": [
+        {
+          "data": {
+            "title": "单品高收益证明",
+            "description": "1个产品，MRR占比32.9%",
+            "icon": "💰"
+          },
+          "read_srt": "健康医疗类别虽然仅有1个产品，但其在收入和M R R方面的表现都非常突出。",
+          "showtime": 6
+        },
+        {
+          "data": {
+            "title": "市场需求巨大",
+            "description": "健康管理刚需持续增长",
+            "icon": "📈"
+          },
+          "read_srt": "这表明健康医疗领域存在巨大的市场需求和商业潜力。",
+          "showtime": 4
+        },
+        {
+          "data": {
+            "title": "细分领域机会",
+            "description": "慢病管理、预防保健",
+            "icon": "🎯"
+          },
+          "read_srt": "可以考虑进一步扩展健康医疗产品线，开发针对不同细分领域的健康管理解决方案。",
+          "showtime": 6
+        },
+        {
+          "data": {
+            "title": "远程医疗潜力",
+            "description": "在线问诊、健康监测",
+            "icon": "📱"
+          },
+          "read_srt": "远程医疗等解决方案具有巨大的发展潜力。",
+          "showtime": 4
+        }
+      ],
+      "duration": 20
+    },
+    {
+      "id": "retention_improvement",
+      "title": "创新方向三：提升客户留存",
+      "illustration": "🎯",
+      "layout": "multiline-type",
+      "content": [
+        {
+          "data": {
+            "title": "优化产品体验"
+          },
+          "read_srt": "SaaS工具类别在M R R占比上略低于其收入占比，提示我们需要优化产品体验。",
+          "showtime": 5
+        },
+        {
+          "data": {
+            "title": "增强客户成功管理"
+          },
+          "read_srt": "增强客户成功管理，建立专业的客户成功团队。",
+          "showtime": 4
+        },
+        {
+          "data": {
+            "title": "提供增值服务"
+          },
+          "read_srt": "提供更具价值的增值服务，增加客户粘性。",
+          "showtime": 4
+        },
+        {
+          "data": {
+            "title": "提升收入稳定性"
+          },
+          "read_srt": "通过这些方式，提升SaaS产品的客户留存率和收入稳定性。",
+          "showtime": 5
+        }
+      ],
+      "duration": 18
+    },
+    {
+      "id": "service_productization",
+      "title": "创新方向四：开发服务产品化",
+      "illustration": "🔧",
+      "layout": "floating-lines",
+      "content": [
+        {
+          "data": {
+            "title": "现状：收入不稳定"
+          },
+          "read_srt": "开发服务类别虽然有一定的收入贡献，但其M R R占比仅为1.5%，收入稳定性较差。",
+          "showtime": 6
+        },
+        {
+          "data": {
+            "title": "转型：产品化服务"
+          },
+          "read_srt": "可以考虑将开发服务进行产品化转型。",
+          "showtime": 3
+        },
+        {
+          "data": {
+            "title": "方案：可复用工具"
+          },
+          "read_srt": "开发可复用的解决方案和工具。",
+          "showtime": 3
+        },
+        {
+          "data": {
+            "title": "结果：提高可预测性"
+          },
+          "read_srt": "提高收入的可预测性和稳定性。",
+          "showtime": 3
+        }
+      ],
+      "duration": 15
+    },
+    {
+      "id": "cross_category_innovation",
+      "title": "创新方向五：跨类别创新",
+      "illustration": "🌐",
+      "layout": "one_col",
+      "content": [
+        {
+          "data": {
+            "title": "观察收入模式差异",
+            "description": "不同类别有不同的收入特点",
+            "icon": "👀"
+          },
+          "read_srt": "观察到不同类别业务在收入模式上的差异，可以尝试跨类别业务模式创新。",
+          "showtime": 6
+        },
+        {
+          "data": {
+            "title": "SaaS+电商模式",
+            "description": "订阅收入+交易佣金",
+            "icon": "🛒"
+          },
+          "read_srt": "例如将SaaS的订阅模式与电子商务的交易模式相结合。",
+          "showtime": 5
+        },
+        {
+          "data": {
+            "title": "AI+健康医疗",
+            "description": "智能诊断+专业服务",
+            "icon": "🤖"
+          },
+          "read_srt": "或将AI技术的智能化能力与健康医疗的专业服务相结合。",
+          "showtime": 5
+        },
+        {
+          "data": {
+            "title": "创造新增长点",
+            "description": "多元化收入来源",
+            "icon": "📈"
+          },
+          "read_srt": "创造新的业务增长点，实现多元化收入来源。",
+          "showtime": 4
+        }
+      ],
+      "duration": 20
+    },
+    {
+      "id": "conclusion",
+      "title": "总结与展望",
+      "illustration": "✨",
+      "layout": "two_cols",
+      "content": [
+        {
+          "data": {
+            "title": "SaaS主导稳固",
+            "description": "产品数量和收入双领先",
+            "icon": "👑"
+          },
+          "read_srt": "本报告通过对业务分类特征、收入分布规律和M R R分布特征的深入分析，发现SaaS工具类别主导地位稳固。",
+          "showtime": 7
+        },
+        {
+          "data": {
+            "title": "健康医疗高价值",
+            "description": "单品高收益高稳定性",
+            "icon": "💎"
+          },
+          "read_srt": "健康医疗类别展现出单个产品的高价值和高稳定性特征。",
+          "showtime": 5
+        },
+        {
+          "data": {
+            "title": "AI技术有潜力",
+            "description": "MRR贡献超出收入占比",
+            "icon": "🌟"
+          },
+          "read_srt": "AI技术类别显示出良好的发展潜力。",
+          "showtime": 4
+        },
+        {
+          "data": {
+            "title": "五大创新方向",
+            "description": "融合、扩展、提升、转型、创新",
+            "icon": "🚀"
+          },
+          "read_srt": "我们推理出了五大创新方向：融合、扩展、提升、转型、创新，为未来业务发展提供了明确的战略指引。",
+          "showtime": 8
+        }
+      ],
+      "duration": 24
+    }
+  ]
+}

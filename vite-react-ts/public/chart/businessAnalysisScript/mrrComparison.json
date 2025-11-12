@@ -1,0 +1,140 @@
+{
+  "title": {
+    "text": "各类别MRR对比",
+    "left": "center",
+    "top": 20,
+    "textStyle": {
+      "fontSize": 24,
+      "fontWeight": "bold"
+    }
+  },
+  "tooltip": {
+    "trigger": "axis",
+    "axisPointer": {
+      "type": "shadow"
+    }
+  },
+  "grid": {
+    "left": "3%",
+    "right": "4%",
+    "bottom": "20%",
+    "containLabel": true
+  },
+  "xAxis": {
+    "type": "category",
+    "data": [
+      "SaaS工具",
+      "开发服务",
+      "其他",
+      "AI技术",
+      "电子商务",
+      "健康医疗",
+      "商业服务",
+      "教育培训",
+      "营销广告"
+    ],
+    "axisLabel": {
+      "interval": 0,
+      "rotate": 45,
+      "fontSize": 12
+    },
+    "name": "业务分类",
+    "nameLocation": "middle",
+    "nameGap": 50,
+    "nameTextStyle": {
+      "fontSize": 14,
+      "fontWeight": "bold"
+    }
+  },
+  "yAxis": {
+    "type": "value",
+    "name": "MRR (USD)",
+    "nameLocation": "middle",
+    "nameGap": 60,
+    "nameTextStyle": {
+      "fontSize": 14,
+      "fontWeight": "bold"
+    },
+    "axisLabel": {
+      "formatter": "{value}"
+    }
+  },
+  "series": [
+    {
+      "name": "MRR",
+      "type": "bar",
+      "barWidth": "60%",
+      "data": [
+        {
+          "value": 1262778,
+          "itemStyle": {
+            "color": "#5470c6"
+          }
+        },
+        {
+          "value": 47806,
+          "itemStyle": {
+            "color": "#91cc75"
+          }
+        },
+        {
+          "value": 263512,
+          "itemStyle": {
+            "color": "#fac858"
+          }
+        },
+        {
+          "value": 458803,
+          "itemStyle": {
+            "color": "#ee6666"
+          }
+        },
+        {
+          "value": 33966,
+          "itemStyle": {
+            "color": "#73c0de"
+          }
+        },
+        {
+          "value": 1032192,
+          "itemStyle": {
+            "color": "#3ba272"
+          }
+        },
+        {
+          "value": 11788,
+          "itemStyle": {
+            "color": "#fc8452"
+          }
+        },
+        {
+          "value": 2998,
+          "itemStyle": {
+            "color": "#9a60b4"
+          }
+        },
+        {
+          "value": 28235,
+          "itemStyle": {
+            "color": "#ea7ccc"
+          }
+        }
+      ],
+      "label": {
+        "show": true,
+        "position": "top",
+        "formatter": "{c}",
+        "fontSize": 10,
+        "rotate": 45,
+        "distance": 5
+      },
+      "emphasis": {
+        "itemStyle": {
+          "shadowBlur": 10,
+          "shadowOffsetX": 0,
+          "shadowColor": "rgba(0, 0, 0, 0.5)"
+        }
+      }
+    }
+  ]
+}

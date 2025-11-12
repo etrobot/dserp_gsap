@@ -1,0 +1,130 @@
+{
+  "title": {
+    "text": "各类别收入占比",
+    "left": "center",
+    "top": 20,
+    "textStyle": {
+      "fontSize": 24,
+      "fontWeight": "bold"
+    }
+  },
+  "tooltip": {
+    "trigger": "item",
+    "formatter": "{b}: {c}% <br/>收入占比"
+  },
+  "legend": {
+    "orient": "vertical",
+    "left": "left",
+    "top": "center",
+    "data": [
+      "SaaS工具",
+      "开发服务",
+      "其他",
+      "AI技术",
+      "电子商务",
+      "健康医疗",
+      "商业服务",
+      "教育培训",
+      "营销广告"
+    ]
+  },
+  "series": [
+    {
+      "name": "收入占比",
+      "type": "pie",
+      "radius": ["40%", "70%"],
+      "center": ["60%", "50%"],
+      "avoidLabelOverlap": true,
+      "itemStyle": {
+        "borderRadius": 10,
+        "borderColor": "#fff",
+        "borderWidth": 2
+      },
+      "label": {
+        "show": true,
+        "formatter": "{b}\n{d}%",
+        "fontSize": 14
+      },
+      "emphasis": {
+        "label": {
+          "show": true,
+          "fontSize": 18,
+          "fontWeight": "bold"
+        },
+        "itemStyle": {
+          "shadowBlur": 10,
+          "shadowOffsetX": 0,
+          "shadowColor": "rgba(0, 0, 0, 0.5)"
+        }
+      },
+      "labelLine": {
+        "show": true
+      },
+      "data": [
+        {
+          "name": "SaaS工具",
+          "value": 57.4,
+          "itemStyle": {
+            "color": "#5470c6"
+          }
+        },
+        {
+          "name": "开发服务",
+          "value": 9.2,
+          "itemStyle": {
+            "color": "#91cc75"
+          }
+        },
+        {
+          "name": "其他",
+          "value": 7.8,
+          "itemStyle": {
+            "color": "#fac858"
+          }
+        },
+        {
+          "name": "AI技术",
+          "value": 6.9,
+          "itemStyle": {
+            "color": "#ee6666"
+          }
+        },
+        {
+          "name": "电子商务",
+          "value": 6.9,
+          "itemStyle": {
+            "color": "#73c0de"
+          }
+        },
+        {
+          "name": "健康医疗",
+          "value": 6.9,
+          "itemStyle": {
+            "color": "#3ba272"
+          }
+        },
+        {
+          "name": "商业服务",
+          "value": 3.0,
+          "itemStyle": {
+            "color": "#fc8452"
+          }
+        },
+        {
+          "name": "教育培训",
+          "value": 1.0,
+          "itemStyle": {
+            "color": "#9a60b4"
+          }
+        },
+        {
+          "name": "营销广告",
+          "value": 0.9,
+          "itemStyle": {
+            "color": "#ea7ccc"
+          }
+        }
+      ]
+    }
+  ]
+}
