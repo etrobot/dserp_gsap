@@ -1,12 +1,5 @@
 import type { ScriptSection } from '@/types/scriptTypes';
-import {
-  CoverLayout,
-  ChartLayout,
-  One_colLayout,
-  Two_colsLayout,
-  MultilineTypeLayout,
-  FloatingLinesLayout,
-} from '@/components/layout';
+import { useEffect, useState } from 'react';
 
 /**
  * Generic Presentation Component
@@ -82,38 +75,60 @@ import {
  * - floating-lines: 浮动文字效果，适合短句
  *   - data.title: [必填] 要显示的文字内容
  */
-const Presentation = ({ section, index, total }: { section: ScriptSection; index: number; total: number }) => {
-  const layout = section.layout || 'two_cols';
+const Presentation = ({ section, index, total, scriptName }: { section: ScriptSection; index: number; total: number; scriptName?: string }) => {
+  // Only handle HTML content rendering for now; ignore other layouts and fields
+  const [htmlContent, setHtmlContent] = useState<string | null>(null);
+  const [htmlTried, setHtmlTried] = useState(false);
 
-  let content;
+  useEffect(() => {
+    let cancelled = false;
+    async function loadHtml() {
+      if (!scriptName) {
+        setHtmlTried(true);
+        return;
+      }
+      const htmlFile = typeof section.content === 'string' && section.content.endsWith('.html')
+        ? section.content
+        : section.id ? `${section.id}.html` : '';
+      if (!htmlFile) {
+        setHtmlTried(true);
+        return;
+      }
+      try {
+        const url = `/scripts/${scriptName}/${htmlFile}`;
+        console.log('[Presentation] Fetching HTML:', url);
+        const res = await fetch(url);
+        if (!cancelled) {
+          if (res.ok) {
+            const text = await res.text();
+            setHtmlContent(text);
+          } else {
+            console.warn('[Presentation] Failed to load HTML:', res.status, url);
+          }
+          setHtmlTried(true);
+        }
+      } catch (e) {
+        console.error('[Presentation] Error loading HTML:', e);
+        if (!cancelled) setHtmlTried(true);
+      }
+    }
+    loadHtml();
+    return () => { cancelled = true };
+  }, [scriptName, section.id, section.content]);
 
-  switch (layout) {
-    case 'chart':
-      content = <ChartLayout section={section} index={index} total={total} />;
-      break;
-    case 'cover':
-      content = <CoverLayout section={section} />;
-      break;
-    case 'one_col':
-      content = <One_colLayout section={section} index={index} total={total} />;
-      break;
-    case 'two_cols':
-      content = <Two_colsLayout section={section} index={index} total={total} />;
-      break;
-    case 'multiline-type':
-      content = <MultilineTypeLayout section={section} index={index} total={total} />;
-      break;
-    case 'floating-lines':
-      content = <FloatingLinesLayout section={section} index={index} total={total} />;
-      break;
-    default:
-      content = <One_colLayout section={section} index={index} total={total} />;
+  if (htmlTried && htmlContent) {
+    return (
+      <div className="relative w-full h-full overflow-auto">
+        <div className="html-section-container mx-auto max-w-5xl p-8">
+          <div className="html-section-content" dangerouslySetInnerHTML={{ __html: htmlContent }} />
+        </div>
+      </div>
+    );
   }
 
+  // Fallback when no HTML is available: render an empty container
   return (
-    <div className="relative w-full h-full">
-      {content}
-    </div>
+    <div className="relative w-full h-full" />
   );
 };
 

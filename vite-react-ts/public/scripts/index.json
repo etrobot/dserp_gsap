@@ -1,8 +1,5 @@
 {
   "files": [
-    "zcoin.json",
-    "ysjfTagInsightScript.json",
-    "businessAnalysisScript.json",
-    "n8nSaaSBlueprintScript.json"
+    "n8nSaaSBlueprintScript"
   ]
 }

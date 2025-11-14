@@ -9,7 +9,7 @@ function AppContent() {
   const getInitialScript = () => {
     const params = new URLSearchParams(window.location.search)
     const scriptParam = params.get('script')
-    return scriptParam ? `${scriptParam}.json` : ''
+    return scriptParam ? `${scriptParam}` : ''
   }
 
   const [selectedFile, setSelectedFile] = useState<string>(getInitialScript())
@@ -21,7 +21,7 @@ function AppContent() {
   }, [])
   const { scripts: scriptsList, loading: listLoading, error: listError } = useScriptsList()
   const { data: scriptData, loading: dataLoading, error: dataError } = useScriptData(
-    selectedFile ? `/scripts/${selectedFile}` : ''
+    selectedFile ? `/scripts/${selectedFile}/script.json` : ''
   )
 
   const { pages, subtitleTexts, pageLayouts, pageDurations, pageContents } = useMemo(() => {
@@ -37,28 +37,24 @@ function AppContent() {
       const section = scriptData.sections[i]
       pagesArr.push(
         <Presentation
-          key={section.id}
+          key={(section.id as any) || (section as any).content || i}
           section={section}
           index={i}
           total={scriptData.sections.length}
+          scriptName={selectedFile || ''}
         />
       )
-      // Extract reading text from content array's read_srt field
-      // Filter out empty strings and join with space
-      const readTexts = section.content
-        ?.map(item => item.read_srt)
-        .filter(text => text && text.trim().length > 0) || []
+      // Simplified narration: one read_srt per section
+      const sectionRead = section.read_srt?.trim() || ''
 
-      subtitleArr.push(readTexts.join(' '))
+      subtitleArr.push(sectionRead)
 
-      // Extract content items for sequential reading
-      const contentItems = section.content?.map((item, idx) => ({
-        text: item.read_srt || '',
-        audioFile: item.audioFile,
-        showtime: item.showtime,
+      // For sequential reading, use a single content item from section.read_srt
+      const contentItems = sectionRead ? [{
+        text: sectionRead,
         sectionId: section.id,
-        contentIndex: idx
-      })).filter(item => item.text && item.text.trim().length > 0) || []
+        contentIndex: 0
+      }] : []
 
       contentsArr.push(contentItems as any)
 
@@ -72,9 +68,9 @@ function AppContent() {
       if (!sectionDuration || sectionDuration <= 0) {
         // Calculate duration from content showtime values
         // This allows different showtime per content item (for animations, transitions, etc.)
-        const showtimeSum = section.content?.reduce((sum, item) => {
-          return sum + (item.showtime || 0);
-        }, 0) || 0;
+        const showtimeSum = Array.isArray(section.content)
+          ? section.content.reduce((sum, item) => sum + (item.showtime || 0), 0)
+          : 0;
 
         if (showtimeSum > 0) {
           sectionDuration = showtimeSum;
@@ -124,7 +120,7 @@ function AppContent() {
       currentScript={selectedFile}
       onScriptChange={setSelectedFile}
       defaultLanguage={scriptData?.language || 'zh-CN'}
-      scriptName={selectedFile?.replace('.json', '') || ''}
+      scriptName={selectedFile || ''}
       autoplay={shouldAutoplay}
     />
   )

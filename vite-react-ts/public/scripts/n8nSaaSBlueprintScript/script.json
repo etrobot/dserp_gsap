@@ -1,0 +1,61 @@
+{
+  "title": "Building SaaS with N8N: The Blueprint",
+  "language": "en-US",
+  "sections": [
+    {
+      "content": "intro.html",
+      "read_srt": "Hey there, welcome back. Today, let's talk about one of the smartest ways to build a SaaS product without needing to be a full-time developer, without starting from zero, and without raising money.",
+      "duration": 6
+    },
+    {
+      "content": "why_n8n.html",
+      "read_srt": "N8N is an incredibly powerful automation platform. It's open-source, self-hostable, and flexible enough to do just about anything Zapier or Make can do, but cheaper and more customizable. Most N8N workflows are built by power users for power users. They expect you to host N8N, configure APIs, handle authentication, debug errors. The average business owner just wants the result. That's the gap. That's where you come in. There's an entire ecosystem of creators publishing free or paid workflows that do serious work. Scrape and enrich leads, automate marketing follow-ups, process user-generated content, connect AI models to business workflows. You don't have to invent the automation from scratch. You just have to package it in a way that's effortless to use.",
+      "duration": 24
+    },
+    {
+      "content": "step1.html",
+      "read_srt": "Don't start by picking a workflow. Start by choosing a problem worth solving. Talk to potential users. Read Reddit. Watch YouTube comments. Ask, what tasks do people complain about automating? Where are they wasting hours? What's too technical for them right now? For example, I want to scrape leads from LinkedIn, but I can't figure it out. I want AI to summarize emails, but setup is too complex. Focus on the job they want done, not the workflow itself.",
+      "duration": 16
+    },
+    {
+      "content": "step2.html",
+      "read_srt": "Now that you know the problem, find or build the workflow. N8N has a massive library. There are YouTube tutorials, GitHub repos, forums. Often someone has already built eighty percent of what you need. Your job is to clone it into your own N8N instance. Make sure it works end to end. Customize as needed for your audience. This is your back-end logic. It's your engine. You don't need to show users any of this.",
+      "duration": 14
+    },
+    {
+      "content": "step3.html",
+      "read_srt": "Here's the real secret sauce: abstraction. Your user doesn't want to see the workflow. They want a form, a button, a result. So you design the simplest interface possible. A web form for inputs. File upload if needed. Single-click submit. No booth screens they can't understand. No webhook URLs they have to configure. Use tools like Lovable, Cursor, Firebase Studio, or custom code. Your entire value is we made it easy.",
+      "duration": 18
+    },
+    {
+      "content": "step4.html",
+      "read_srt": "This is the part a lot of people skip. It's not enough to work. It has to be useful. Polish the output. For example, instead of raw JSON, give them a clean PDF report. Instead of a Slack message, deliver a branded email. Instead of API gibberish, show them charts. Think about what makes the result valuable to them. This is where you differentiate from just an automation. You're turning it into a product.",
+      "duration": 16
+    },
+    {
+      "content": "step5.html",
+      "read_srt": "Pay-per-use with AI credit margin if you're calling models. Monthly plans with usage tiers. One-time lifetime deals for early users, custom plans for power users. You can even handle the AI cost for them and bake it in, removing one more friction point. Remember, users will happily pay extra to avoid complexity.",
+      "duration": 16
+    },
+    {
+      "content": "examples.html",
+      "read_srt": "Lead gen SaaS workflow scrapes leads, enriches data, exports to email CSV. User pays monthly for credits. Target freelancers and agencies. Content summarizer workflow. Takes emails or PDFs, runs Open AI summarization. User pastes text, gets summary. Sell to lawyers, consultants, students. AI copy generator with pre-built templates. N8N calls OpenAI with your curated prompt library. User selects template, adds inputs, clicks generate. You charge for monthly credits. Automated data cleaning. User uploads CSV. N8N runs cleaning steps. Returns polish file. Sell to e-commerce brands or analysts.",
+      "duration": 20
+    },
+    {
+      "content": "why_works.html",
+      "read_srt": "The truth is software isn't about code. It's about removing friction. N8N gives you all the technical power, but most people can't or won't use it directly. They'll pay you to hide the mess. You're not selling a workflow. You're selling certainty. Certainty it works. Certainty it's easy. Certainty they get results. That's worth money. These don't need giant teams, just one founder who can think like a problem solver. And if you're serious about this, make sure to subscribe because I'll be posting step-by-step tutorials on how to actually build these tools from idea to launch.",
+      "duration": 20
+    },
+    {
+      "content": "recap.html",
+      "read_srt": "One, find a real problem people want solved. Two, source or build the N8N automation. Three, abstract away the complexity with a simple UI. Four, make the output polished and useful. Five, choose a business model and launch.",
+      "duration": 15
+    },
+    {
+      "content": "outro.html",
+      "read_srt": "If you do this right, you can turn free public workflows into paid SaaS products people rely on. Thanks for watching. See you next time.",
+      "duration": 5
+    }
+  ]
+}

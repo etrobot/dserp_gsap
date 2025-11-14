@@ -70,21 +70,28 @@ function validateSection(
 ) {
   const sectionPrefix = `Section ${index} (${section.title || 'untitled'})`;
 
-  // Check required fields
-  if (!section.id || typeof section.id !== 'string') {
-    errors.push(`${sectionPrefix}: Missing or invalid field "id"`);
-  }
-
-  if (!section.title || typeof section.title !== 'string') {
-    errors.push(`${sectionPrefix}: Missing or invalid field "title"`);
-  }
-
-  // Check layout
+  // Determine layout and whether this is an HTML-backed section
   const layout = section.layout || 'two_cols';
-  if (!VALID_LAYOUTS.includes(layout)) {
-    errors.push(`${sectionPrefix}: Invalid layout type "${layout}". Must be one of: ${VALID_LAYOUTS.join(', ')}`);
+  const isHtmlSection = typeof section.content === 'string' && section.content.endsWith('.html');
+
+  if (isHtmlSection) {
+    // HTML sections: no id/title/layout required; track as 'html'
+    stats.layoutTypes['html'] = (stats.layoutTypes['html'] || 0) + 1;
   } else {
-    stats.layoutTypes[layout] = (stats.layoutTypes[layout] || 0) + 1;
+    // Non-HTML sections require id/title and a valid layout
+    if (!section.id || typeof section.id !== 'string') {
+      errors.push(`${sectionPrefix}: Missing or invalid field "id"`);
+    }
+
+    if (!section.title || typeof section.title !== 'string') {
+      errors.push(`${sectionPrefix}: Missing or invalid field "title"`);
+    }
+
+    if (!VALID_LAYOUTS.includes(layout)) {
+      errors.push(`${sectionPrefix}: Invalid layout type "${layout}". Must be one of: ${VALID_LAYOUTS.join(', ')}`);
+    } else {
+      stats.layoutTypes[layout] = (stats.layoutTypes[layout] || 0) + 1;
+    }
   }
 
   // Chart-specific validation
@@ -104,18 +111,35 @@ function validateSection(
     }
   }
 
-  // Validate content array
-  if (!Array.isArray(section.content)) {
-    errors.push(`${sectionPrefix}: Missing or invalid field "content" (must be array)`);
-  } else {
-    if (section.content.length === 0) {
-      warnings.push(`${sectionPrefix}: Content array is empty`);
+  // Simplified narration: allow a single section-level read_srt
+  if (section.read_srt) {
+    if (typeof section.read_srt !== 'string') {
+      errors.push(`${sectionPrefix}: read_srt must be string when provided`);
+    } else {
+      stats.contentCount += 1;
     }
+  }
 
-    section.content.forEach((item: any, contentIndex: number) => {
-      validateContentItem(item, contentIndex, sectionPrefix, layout, errors, warnings);
-      stats.contentCount++;
-    });
+  // content 可以是字符串（指向 HTML 文件名）或数组（旧布局数据）
+  if (section.content !== undefined) {
+    if (typeof section.content === 'string') {
+      if (!section.content.endsWith('.html')) {
+        warnings.push(`${sectionPrefix}: content is a string but not an .html file name`);
+      }
+    } else if (Array.isArray(section.content)) {
+      if (section.content.length === 0) {
+        warnings.push(`${sectionPrefix}: Content array is empty`);
+      }
+      section.content.forEach((item: any, contentIndex: number) => {
+        validateContentItem(item, contentIndex, sectionPrefix, layout, errors, warnings);
+      });
+    } else {
+      errors.push(`${sectionPrefix}: Invalid field \"content\" (must be string or array)`);
+    }
+  }
+
+  if (!section.read_srt && (section.content === undefined || section.content === null)) {
+    warnings.push(`${sectionPrefix}: Neither read_srt nor content provided (no narration)`);
   }
 
   // Optional fields
