@@ -34,18 +34,8 @@
     },
     {
       "id": "step1-7",
-      "screen": "文字画面: 1. WHAT TASKS DO PEOPLE COMPLAIN ABOUT AUTOMATING?",
-      "read_srt": "What tasks do people complain about automating?"
-    },
-    {
-      "id": "step1-8",
-      "screen": "文字画面: 2. WHERE ARE THEY WASTING HOURS?",
-      "read_srt": "Where are they wasting hours?"
-    },
-    {
-      "id": "step1-9",
-      "screen": "文字画面: 3. WHAT'S TOO TECHNICAL FOR THEM RIGHT NOW?",
-      "read_srt": "What's too technical for them right now?"
+      "screen": "文字画面: 1. WHAT TASKS DO PEOPLE COMPLAIN ABOUT AUTOMATING? 2. WHERE ARE THEY WASTING HOURS? 3. WHAT'S TOO TECHNICAL FOR THEM RIGHT NOW?",
+      "read_srt": "What tasks do people complain about automating? Where are they wasting hours? What's too technical for them right now?"
     },
     {
       "id": "step1-10",
@@ -289,18 +279,8 @@
     },
     {
       "id": "step5-4",
-      "screen": "“Buy AI Credits” 支付表单界面",
-      "read_srt": "pay-per-use with AI credit"
-    },
-    {
-      "id": "step5-5",
-      "screen": "“1forAll.ai” 终身会员优惠页面",
-      "read_srt": "lifetime deals for early users,"
-    },
-    {
-      "id": "step5-6",
-      "screen": "“Business” 和 “Enterprise” 定制价格页面",
-      "read_srt": "custom plans for power users."
+      "screen": "Buy AI Credits 支付表单界面 · 1forAll.ai 终身会员优惠页面 · Business 和 Enterprise 定制价格页面",
+      "read_srt": "pay-per-use with AI credit, lifetime deals for early users, custom plans for power users."
     },
     {
       "id": "step5-7",
@@ -479,28 +459,8 @@
     },
     {
       "id": "sec-105",
-      "screen": "虚拟主播讲解（带 “1. FIND A REAL PROBLEM...” 字幕）",
-      "read_srt": "One: Find a real problem people want solved."
-    },
-    {
-      "id": "sec-106",
-      "screen": "虚拟主播讲解（带 “2. SOURCE OR BUILD...” 字幕）",
-      "read_srt": "Two: Source or build the n8n automation."
-    },
-    {
-      "id": "sec-107",
-      "screen": "虚拟主播讲解（带 “3. ABSTRACT AWAY...” 字幕）",
-      "read_srt": "Three: Abstract away the complexity with a simple UI."
-    },
-    {
-      "id": "sec-108",
-      "screen": "虚拟主播讲解（带 “4. MAKE THE OUTPUT...” 字幕）",
-      "read_srt": "Four: Make the output polished and useful."
-    },
-    {
-      "id": "sec-109",
-      "screen": "虚拟主播讲解（带 “5. CHOOSE A BUSINESS MODEL...” 字幕）",
-      "read_srt": "Five: Choose a business model and launch."
+      "screen": "虚拟主播讲解（带 1. FIND A REAL PROBLEM 2. SOURCE OR BUILD 3. ABSTRACT AWAY 4. MAKE THE OUTPUT 5. CHOOSE A BUSINESS MODEL 字幕依次出现）",
+      "read_srt": "One: Find a real problem people want solved. Two: Source or build the n8n automation. Three: Abstract away the complexity with a simple UI. Four: Make the output polished and useful. Five: Choose a business model and launch."
     },
     {
       "id": "sec-110",
