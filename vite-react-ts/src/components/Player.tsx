@@ -36,6 +36,7 @@ interface PlayerProps {
 
 const Player: React.FC<PlayerProps> = ({
   pages,
+  subtitleTexts = [],
   className = '',
   scriptFiles = [],
   currentScript = '',
@@ -61,6 +62,11 @@ const Player: React.FC<PlayerProps> = ({
   const { stop: stopDefault } = useSpeech();
   const { speak: speakWithFallback, stop: stopFallback, isSpeaking } = useSpeechWithFallback();
 
+  // Subtitles toggle (default on, can be disabled by ?subtitles=off)
+  const [showSubtitles, setShowSubtitles] = useState<boolean>(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('subtitles') !== 'off';
+  });
 
   
   const stop = useCallback(() => {
@@ -399,8 +405,8 @@ const Player: React.FC<PlayerProps> = ({
     <div className={`flex flex-col items-center justify-center min-h-screen bg-gray-800 ${className}`}>
       <div
         ref={containerRef}
-        className="rounded-lg shadow-2xl overone_col-hidden relative bg-black"
-        style={{ width: '1280px', height: '720px' }}
+        className="relative rounded-lg shadow-2xl bg-black"
+        style={isRecordingMode ? { width: '1280px', height: '720px' } : { width: 'min(1280px, 90vw)', aspectRatio: '16 / 9' }}
       >
         {/* Fixed background - changes based on page layout */}
         <div className="absolute inset-0 overone_col-hidden opacity-50 pointer-events-none flex items-center justify-center">
@@ -464,6 +470,15 @@ const Player: React.FC<PlayerProps> = ({
         >
           {pages[currentPage]}
         </div>
+
+        {/* Subtitle overlay */}
+        {showSubtitles && subtitleTexts && subtitleTexts[currentPage] && subtitleTexts[currentPage].trim().length > 0 && (
+          <div className="absolute z-20 bottom-3 md:bottom-4 left-1/2 -translate-x-1/2 w-[96%] max-w-5xl">
+            <div className="px-4 py-2 md:px-5 md:py-3 rounded bg-black/60 text-white text-base md:text-xl leading-relaxed text-center shadow-lg whitespace-pre-wrap">
+              {subtitleTexts[currentPage]}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* 控制按钮 - 在录制模式下隐藏 */}
@@ -506,6 +521,14 @@ const Player: React.FC<PlayerProps> = ({
             <option value="fr-FR">🇫🇷 Français</option>
             <option value="de-DE">🇩🇪 Deutsch</option>
           </select>
+
+          <button
+            onClick={() => setShowSubtitles((s) => !s)}
+            className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 transition-colors"
+            title="字幕开关"
+          >
+            {showSubtitles ? '💬 关闭字幕' : '💬 显示字幕'}
+          </button>
 
           <button
             onClick={handlePrevPage}

@@ -59,9 +59,9 @@ const Two_colsLayout = ({ section, index, total }: Two_colsLayoutProps) => {
       <div className="w-full flex flex-col items-center flex-1 justify-center">
         <div className="flex flex-col items-center justify-center mb-8">
           <div className="text-5xl mb-4">{section.illustration}</div>
-          {section.title && (
+          {(section.screen || section.title) && (
             <TextType
-              text={section.title}
+              text={section.screen || section.title}
               as="h1"
               className="text-3xl md:text-4xl font-bold text-white text-center"
               showCursor={false}

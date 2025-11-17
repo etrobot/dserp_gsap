@@ -1,0 +1,531 @@
+{
+  "title": "N8N SaaS Blueprint · Footage Placeholders",
+  "language": "en-US",
+  "sections": [
+    {
+      "id": "step1-1",
+      "screen": "虚拟主播讲解",
+      "read_srt": "Don't start by picking a workflow."
+    },
+    {
+      "id": "step1-2",
+      "screen": "两人在会议中（使用笔记本电脑）",
+      "read_srt": "Start by choosing a problem worth solving."
+    },
+    {
+      "id": "step1-3",
+      "screen": "两人在会议中（使用笔记本电脑）",
+      "read_srt": "Talk to potential users."
+    },
+    {
+      "id": "step1-4",
+      "screen": "Reddit n8n 版块的屏幕截图",
+      "read_srt": "Read Reddit."
+    },
+    {
+      "id": "step1-5",
+      "screen": "YouTube 评论区的屏幕截图",
+      "read_srt": "Watch YouTube comments."
+    },
+    {
+      "id": "step1-6",
+      "screen": "文字画面: Ask",
+      "read_srt": "Ask."
+    },
+    {
+      "id": "step1-7",
+      "screen": "文字画面: 1. WHAT TASKS DO PEOPLE COMPLAIN ABOUT AUTOMATING?",
+      "read_srt": "What tasks do people complain about automating?"
+    },
+    {
+      "id": "step1-8",
+      "screen": "文字画面: 2. WHERE ARE THEY WASTING HOURS?",
+      "read_srt": "Where are they wasting hours?"
+    },
+    {
+      "id": "step1-9",
+      "screen": "文字画面: 3. WHAT'S TOO TECHNICAL FOR THEM RIGHT NOW?",
+      "read_srt": "What's too technical for them right now?"
+    },
+    {
+      "id": "step1-10",
+      "screen": "虚拟主播讲解",
+      "read_srt": "For example,"
+    },
+    {
+      "id": "step1-11",
+      "screen": "文字画面: I WANT TO SCRAPE LEADS FROM LINKEDIN BUT I CAN'T FIGURE IT OUT.",
+      "read_srt": "I want to scrape leads from LinkedIn but I can't figure it out."
+    },
+    {
+      "id": "step1-12",
+      "screen": "文字画面: I WANT AI TO SUMMARIZE EMAILS BUT SETUP IS TOO COMPLEX.",
+      "read_srt": "I want AI to summarize emails but setup is too complex."
+    },
+    {
+      "id": "step1-13",
+      "screen": "虚拟主播讲解",
+      "read_srt": "Focus on the job they want done, not the workflow itself."
+    },
+    {
+      "id": "step2-1",
+      "screen": "标题画面: STEP 2: SOURCE OR BUILD THE AUTOMATION",
+      "read_srt": "Step two: source or build the automation."
+    },
+    {
+      "id": "step2-2",
+      "screen": "虚拟主播讲解",
+      "read_srt": "Now that you know the problem, find or build the workflow."
+    },
+    {
+      "id": "step2-3",
+      "screen": "YouTube 搜索 \"n8n agent\" 的屏幕录制",
+      "read_srt": "n8n has a massive library."
+    },
+    {
+      "id": "step2-4",
+      "screen": "n8n 模板库网站的屏幕录制",
+      "read_srt": "There are YouTube tutorials,"
+    },
+    {
+      "id": "step2-5",
+      "screen": "n8n GitHub 仓库的屏幕录制",
+      "read_srt": "GitHub repos, forums."
+    },
+    {
+      "id": "step2-6",
+      "screen": "虚拟主播讲解",
+      "read_srt": "Often, someone has already built 80% of what you need."
+    },
+    {
+      "id": "step2-7",
+      "screen": "n8n 自动化工作流界面（天气示例）",
+      "read_srt": "Your job is to clone it into your own n8n instance."
+    },
+    {
+      "id": "step2-8",
+      "screen": "n8n 自动化工作流界面（Google Sheets/AI 示例）",
+      "read_srt": "Make sure it works end-to-end."
+    },
+    {
+      "id": "step2-9",
+      "screen": "n8n 自动化工作流界面（Google Sheets/AI 示例） · 虚拟主播讲解",
+      "read_srt": "Customize as needed for your audience."
+    },
+    {
+      "id": "step2-10",
+      "screen": "虚拟主播讲解",
+      "read_srt": "This is your backend logic.It's your engine.You don't need to show users any of this."
+    },
+    {
+      "id": "step3-1",
+      "screen": "标题画面: STEP 3: SIMPLIFY THE EXPERIENCE",
+      "read_srt": "Step three: simplify the experience."
+    },
+    {
+      "id": "step3-2",
+      "screen": "虚拟主播讲解",
+      "read_srt": "Here's the real secret sauce:"
+    },
+    {
+      "id": "step3-3",
+      "screen": "文字画面: ABSTRACTION",
+      "read_srt": "abstraction."
+    },
+    {
+      "id": "step3-4",
+      "screen": "虚拟主播讲解",
+      "read_srt": "Your user doesn't want to see the workflow."
+    },
+    {
+      "id": "step3-5",
+      "screen": "“Let's Work Together” 网页表单界面",
+      "read_srt": "They want a form,"
+    },
+    {
+      "id": "step3-6",
+      "screen": "Slack 数据分析仪表盘界面",
+      "read_srt": "a button,"
+    },
+    {
+      "id": "step3-7",
+      "screen": "虚拟主播讲解",
+      "read_srt": "a result."
+    },
+    {
+      "id": "step3-8",
+      "screen": "“AI Search Portal” 网页表单界面",
+      "read_srt": "So you design the simplest interface possible."
+    },
+    {
+      "id": "step3-9",
+      "screen": "“AI Search Portal” 网页表单界面（展示文件上传）",
+      "read_srt": "A web form for inputs, file upload if needed, single-click submit."
+    },
+    {
+      "id": "step3-10",
+      "screen": "n8n 界面（Google Gemini API 凭证）",
+      "read_srt": "No OAuth screens they can't understand,"
+    },
+    {
+      "id": "step3-11",
+      "screen": "n8n 界面（HTTP Request 节点）",
+      "read_srt": "no webhook URLs they have to configure."
+    },
+    {
+      "id": "step3-12",
+      "screen": "Lovable AI 聊天界面",
+      "read_srt": "Use tools like Lovable,"
+    },
+    {
+      "id": "step3-13",
+      "screen": "Cursor AI 代码编辑器网站",
+      "read_srt": "Cursor,"
+    },
+    {
+      "id": "step3-14",
+      "screen": "Divi AI 原型工具界面",
+      "read_srt": "Fire Studio,"
+    },
+    {
+      "id": "step3-15",
+      "screen": "代码特写（JavaScript/jQuery）",
+      "read_srt": "or custom code."
+    },
+    {
+      "id": "step3-16",
+      "screen": "虚拟主播讲解",
+      "read_srt": "Your entire value is:"
+    },
+    {
+      "id": "step3-17",
+      "screen": "文字画面: “WE MADE IT EASY.”（背景为模糊的工作流）",
+      "read_srt": "'We made it easy.'"
+    },
+    {
+      "id": "step4-1",
+      "screen": "标题画面: STEP 4: MAKE IT DELIVER REAL VALUE",
+      "read_srt": "Step four: Make it deliver real value."
+    },
+    {
+      "id": "step4-2",
+      "screen": "虚拟主播讲解",
+      "read_srt": "This is the part a lot of people skip."
+    },
+    {
+      "id": "step4-3",
+      "screen": "在笔记本电脑和手机上编码的人",
+      "read_srt": "It's not enough to work."
+    },
+    {
+      "id": "step4-4",
+      "screen": "使用三脚架上智能手机的女性",
+      "read_srt": "It has to be useful."
+    },
+    {
+      "id": "step4-5",
+      "screen": "虚拟主播讲解",
+      "read_srt": "Polish the output."
+    },
+    {
+      "id": "step4-6",
+      "screen": "JSON 文件图标",
+      "read_srt": "For example, instead of raw JSON,"
+    },
+    {
+      "id": "step4-7",
+      "screen": "PDF 文件图标",
+      "read_srt": "give them a clean PDF report."
+    },
+    {
+      "id": "step4-8",
+      "screen": "带有格式化报告的 Slack 消息界面",
+      "read_srt": "Instead of a Slack message,"
+    },
+    {
+      "id": "step4-9",
+      "screen": "Gmail 图标",
+      "read_srt": "deliver a branded email."
+    },
+    {
+      "id": "step4-10",
+      "screen": "代码屏幕（“API Gibberish”）",
+      "read_srt": "Instead of API gibberish,"
+    },
+    {
+      "id": "step4-11",
+      "screen": "折线图图表界面",
+      "read_srt": "show them charts."
+    },
+    {
+      "id": "step4-12",
+      "screen": "虚拟主播讲解",
+      "read_srt": "Think about what makes the result valuable to them."
+    },
+    {
+      "id": "step4-13",
+      "screen": "n8n 自动化工作流界面（复杂的 AI 工作流）",
+      "read_srt": "This is where you differentiate from just an automation."
+    },
+    {
+      "id": "step4-14",
+      "screen": "“YouTube Trend Finder” 界面（搜索失败）",
+      "read_srt": "You're turning it into a product."
+    },
+    {
+      "id": "step5-1",
+      "screen": "标题画面: STEP 5: DESIGN THE BUSINESS MODEL",
+      "read_srt": "Step five: Design the business model."
+    },
+    {
+      "id": "step5-2",
+      "screen": "n8n 工作流（叠加钞票画面）",
+      "read_srt": "Now you monetize."
+    },
+    {
+      "id": "step5-3",
+      "screen": "虚拟主播讲解",
+      "read_srt": "Options include:"
+    },
+    {
+      "id": "step5-4",
+      "screen": "“Buy AI Credits” 支付表单界面",
+      "read_srt": "pay-per-use with AI credit"
+    },
+    {
+      "id": "step5-5",
+      "screen": "“1forAll.ai” 终身会员优惠页面",
+      "read_srt": "lifetime deals for early users,"
+    },
+    {
+      "id": "step5-6",
+      "screen": "“Business” 和 “Enterprise” 定制价格页面",
+      "read_srt": "custom plans for power users."
+    },
+    {
+      "id": "step5-7",
+      "screen": "虚拟主播讲解",
+      "read_srt": "You can even handle the AI cost for them and bake it in,removing one more headache.That's it.Five steps to turn n8n into a business.No bullshit.No fluff.Now go build something."
+    },
+    {
+      "id": "sec-071",
+      "screen": "Google Sheet（包含抓取到的电子邮件）",
+      "read_srt": "enriches data,"
+    },
+    {
+      "id": "sec-072",
+      "screen": "生成 CSV 的 Python 代码界面",
+      "read_srt": "email CSV."
+    },
+    {
+      "id": "sec-073",
+      "screen": "“Buy AI Credits” 支付表单界面",
+      "read_srt": "User pays monthly for credits."
+    },
+    {
+      "id": "sec-074",
+      "screen": "视频剪辑师 · 办公室职员",
+      "read_srt": "Target: freelancers, agencies."
+    },
+    {
+      "id": "sec-075",
+      "screen": "虚拟主播讲解（带 “CONTENT SUMMARIZER” 字幕）",
+      "read_srt": "Content summarizer workflow."
+    },
+    {
+      "id": "sec-076",
+      "screen": "n8n 工作流（带 Gmail 和 PDF 图标）",
+      "read_srt": "Takes emails or PDFs,"
+    },
+    {
+      "id": "sec-077",
+      "screen": "n8n 工作流: Google Drive > OpenAI > Gmail",
+      "read_srt": "runs OpenAI summarization."
+    },
+    {
+      "id": "sec-078",
+      "screen": "OpenAI Playground（文本摘要）界面",
+      "read_srt": "User pastes text, gets summary."
+    },
+    {
+      "id": "sec-079",
+      "screen": "律师开会 · 客服中心 · 教室里的学生",
+      "read_srt": "Sell to lawyers, consultants, students."
+    },
+    {
+      "id": "sec-080",
+      "screen": "虚拟主播讲解（带 “AI COPY GENERATOR...” 字幕）",
+      "read_srt": "AI copy generator with pre-built templates."
+    },
+    {
+      "id": "sec-081",
+      "screen": "AI 工具模板网格界面",
+      "read_srt": "n8n calls OpenAI with your curated prompt library."
+    },
+    {
+      "id": "sec-082",
+      "screen": "“What's your story idea?” 文本提示界面",
+      "read_srt": "User selects template, adds inputs, clicks generate."
+    },
+    {
+      "id": "sec-083",
+      "screen": "价格方案页面（Standard, Pro, Mega）",
+      "read_srt": "You charge for monthly credits."
+    },
+    {
+      "id": "sec-084",
+      "screen": "虚拟主播讲解（带 “AUTOMATED DATA CLEANING” 字幕）",
+      "read_srt": "Automated data cleaning."
+    },
+    {
+      "id": "sec-085",
+      "screen": "“CSV to PDF” 文件上传界面",
+      "read_srt": "User uploads CSV,"
+    },
+    {
+      "id": "sec-086",
+      "screen": "“CSV to PDF” 转换和下载页面",
+      "read_srt": "n8n runs cleaning steps, returns polished file."
+    },
+    {
+      "id": "sec-087",
+      "screen": "商务人士会议 · 虚拟主播讲解",
+      "read_srt": "Sell to e-commerce brands or analysts."
+    },
+    {
+      "id": "sec-088",
+      "screen": "在电脑前的设计师",
+      "read_srt": "These don't need giant teams."
+    },
+    {
+      "id": "sec-089",
+      "screen": "在电脑前的设计师（带 “PROBLEM-SOLVER” 字幕）",
+      "read_srt": "Just one founder who can think like a problem-solver."
+    },
+    {
+      "id": "sec-090",
+      "screen": "标题画面: WHY THIS MODEL WORKS",
+      "read_srt": "Why this model works."
+    },
+    {
+      "id": "sec-091",
+      "screen": "虚拟主播讲解",
+      "read_srt": "The truth is,"
+    },
+    {
+      "id": "sec-092",
+      "screen": "代码特写 · 人们在编码",
+      "read_srt": "software isn't about code, it's about removing friction."
+    },
+    {
+      "id": "sec-093",
+      "screen": "n8n logos",
+      "read_srt": "n8n gives you all the technical power,"
+    },
+    {
+      "id": "sec-094",
+      "screen": "n8n 工作流界面",
+      "read_srt": "but most people can't or won't use it directly."
+    },
+    {
+      "id": "sec-095",
+      "screen": "虚拟主播讲解 · 混乱的代码/文本",
+      "read_srt": "They'll pay you to hide the mess."
+    },
+    {
+      "id": "sec-096",
+      "screen": "“Featured sales templates” 页面",
+      "read_srt": "You're not selling a workflow."
+    },
+    {
+      "id": "sec-097",
+      "screen": "虚拟主播讲解",
+      "read_srt": "You're selling certainty."
+    },
+    {
+      "id": "sec-098",
+      "screen": "文字 “CERTAINTY” 叠加在 n8n 工作流上",
+      "read_srt": "Certainty it works."
+    },
+    {
+      "id": "sec-099",
+      "screen": "文字 “CERTAINTY IT'S EASY.” 叠加在模糊的 UI 上",
+      "read_srt": "Certainty it's easy."
+    },
+    {
+      "id": "sec-100",
+      "screen": "文字 “CERTAINTY THEY GET RESULTS” 叠加在模糊的工作流上",
+      "read_srt": "Certainty they get results."
+    },
+    {
+      "id": "sec-101",
+      "screen": "虚拟主播讲解",
+      "read_srt": "That's worth money."
+    },
+    {
+      "id": "sec-102",
+      "screen": "虚拟主播讲解（带 YouTube 订阅按钮）",
+      "read_srt": "And if you're serious about this, make sure to subscribe,"
+    },
+    {
+      "id": "sec-103",
+      "screen": "虚拟主播讲解（带 YouTube 订阅按钮）",
+      "read_srt": "because I'll be posting step-by-step tutorials on how to actually build these tools from idea to launch."
+    },
+    {
+      "id": "sec-104",
+      "screen": "n8n 账户设置录屏 · n8n 仪表盘录屏 · 虚拟主播讲解（带 “Your Blueprint:” 字幕）",
+      "read_srt": "So that's your blueprint."
+    },
+    {
+      "id": "sec-105",
+      "screen": "虚拟主播讲解（带 “1. FIND A REAL PROBLEM...” 字幕）",
+      "read_srt": "One: Find a real problem people want solved."
+    },
+    {
+      "id": "sec-106",
+      "screen": "虚拟主播讲解（带 “2. SOURCE OR BUILD...” 字幕）",
+      "read_srt": "Two: Source or build the n8n automation."
+    },
+    {
+      "id": "sec-107",
+      "screen": "虚拟主播讲解（带 “3. ABSTRACT AWAY...” 字幕）",
+      "read_srt": "Three: Abstract away the complexity with a simple UI."
+    },
+    {
+      "id": "sec-108",
+      "screen": "虚拟主播讲解（带 “4. MAKE THE OUTPUT...” 字幕）",
+      "read_srt": "Four: Make the output polished and useful."
+    },
+    {
+      "id": "sec-109",
+      "screen": "虚拟主播讲解（带 “5. CHOOSE A BUSINESS MODEL...” 字幕）",
+      "read_srt": "Five: Choose a business model and launch."
+    },
+    {
+      "id": "sec-110",
+      "screen": "虚拟主播讲解",
+      "read_srt": "If you do this right,"
+    },
+    {
+      "id": "sec-111",
+      "screen": "YouTube “n8n tutorials” 屏幕录制",
+      "read_srt": "you can turn free public workflows"
+    },
+    {
+      "id": "sec-112",
+      "screen": "Slack, Salesforce, Shopify 的 logos",
+      "read_srt": "into paid SaaS products people rely on."
+    },
+    {
+      "id": "sec-113",
+      "screen": "虚拟主播讲解",
+      "read_srt": "Thanks for watching."
+    },
+    {
+      "id": "sec-114",
+      "screen": "感谢观看的结束画面",
+      "read_srt": "See you next time."
+    }
+  ]
+}

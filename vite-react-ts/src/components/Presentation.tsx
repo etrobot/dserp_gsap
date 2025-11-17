@@ -6,6 +6,7 @@ import {
   Two_colsLayout,
   MultilineTypeLayout,
   FloatingLinesLayout,
+ FootagePlaceholderLayout,
 } from '@/components/layout';
 
 /**
@@ -19,11 +20,13 @@ import {
  *   "sections": [                         // [必填] 章节数组
  *     {
  *       "id": "unique_section_id",        // [必填] 章节唯一标识符
- *       "title": "章节标题",              // [必填] 章节标题
+ *       "screen": "章节名称",             // [必填] 章节名称（原 title 字段已更名为 screen）
  *       "illustration": "📊",             // [可选] 章节插图或表情符号
  *       "layout": "two_cols",            // [可选] 布局类型，默认 "two_cols"
  *                                         // 可选值: cover | chart | two_cols | one_col | multiline-type | floating-lines
  *       "duration": 10,                   // [可选] 整个页面的显示时长（秒），用于自动播放时的页面切换
+ * 
+ *       "read_srt": "语音朗读文本",     // [可选] 本章节的 TTS 语音朗读文本（已从 content 项提升到 section 级别）
  * 
  *       "chartConfig": {                  // [条件可选] layout="chart" 时使用，ECharts 内联配置对象
  *         // 注意: 不要设置 backgroundColor 和 textStyle，使用播放器的深色主题
@@ -49,7 +52,7 @@ import {
  *             "description": "内容描述",  // two_cols/one_col: 描述文本
  *             "icon": "🎯"                // two_cols/one_col: 图标
  *           },
- *           "read_srt": "语音朗读文本",   // [可选] TTS 语音朗读的文本内容
+ *           // read_srt 已移至章节级别（section.read_srt）
  *           "showtime": 3                 // [可选] 该动画项的显示时间（秒），用于控制动画时长
  *         }
  *       ]
@@ -67,23 +70,27 @@ import {
  *   - data: 不需要
  * 
  * - two_cols: 双列展示，偶数项首选
- *   - data.title: [必填] 要点标题
+ *   - data.title: [必填] 要点标题（章节级标题字段已改为 section.screen）
  *   - data.description: [可选] 要点描述
  *   - data.icon: [可选] 要点图标
  * 
  * - one_col: 瀑布流展示，奇数项首选
- *   - data.title: [必填] 步骤标题
+ *   - data.title: [必填] 步骤标题（章节级标题字段已改为 section.screen）
  *   - data.description: [可选] 步骤描述
  *   - data.icon: [可选] 步骤图标
  * 
  * - multiline-type: 多行逐行打字机效果，适合短语
- *   - data.title: [必填] 要显示的文字内容
+ *   - data.title: [必填] 要显示的文字内容（章节级标题字段已改为 section.screen）
  * 
  * - floating-lines: 浮动文字效果，适合短句
- *   - data.title: [必填] 要显示的文字内容
+ *   - data.title: [必填] 要显示的文字内容（章节级标题字段已改为 section.screen）
+ * 
+ * - footage-placeholder: 视频占位页，使用标签瓷砖样式（Tile）提示，例如“虚拟主播讲解”
+ *   - screen: [必填] 标签文本（章节级标题字段已更名为 screen，将显示在占位框左上角）
+ *   - illustration: [可选] 右下角的装饰图标/表情符号
  */
 const Presentation = ({ section, index, total }: { section: ScriptSection; index: number; total: number }) => {
-  const layout = section.layout || 'two_cols';
+  const layout = section.layout || 'footage-placeholder';
 
   let content;
 
@@ -105,6 +112,9 @@ const Presentation = ({ section, index, total }: { section: ScriptSection; index
       break;
     case 'floating-lines':
       content = <FloatingLinesLayout section={section} index={index} total={total} />;
+      break;
+    case 'footage-placeholder':
+      content = <FootagePlaceholderLayout section={section} index={index} total={total} />;
       break;
     default:
       content = <One_colLayout section={section} index={index} total={total} />;

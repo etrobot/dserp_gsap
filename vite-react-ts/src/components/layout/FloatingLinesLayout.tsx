@@ -19,10 +19,10 @@ const FloatingLinesLayout = ({ section, index, total }: FloatingLinesLayoutProps
         {index + 1}/{total}
       </div>
 
-      {section.title && (
+      {(section.screen || section.title) && (
         <FadeContent duration={600} fill={false}>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-8 text-center">
-            {section.title}
+            {section.screen || section.title}
           </h1>
         </FadeContent>
       )}

@@ -67,9 +67,9 @@ const One_colLayout = ({ section, index, total }: One_colLayoutProps) => {
         <FadeContent duration={600}>
           <div className="flex flex-col items-center justify-center sticky top-1/3">
             <div className="text-9xl mb-6">{section.illustration}</div>
-            {section.title && (
+            {(section.screen || section.title) && (
               <h1 className="text-4xl md:text-5xl font-black text-white text-center">
-                {section.title}
+                {section.screen || section.title}
               </h1>
             )}
           </div>

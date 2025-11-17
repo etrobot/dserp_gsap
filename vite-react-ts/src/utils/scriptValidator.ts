@@ -11,7 +11,7 @@ export interface ValidationResult {
   };
 }
 
-const VALID_LAYOUTS = ['cover', 'chart', 'two_cols', 'one_col', 'multiline-type', 'floating-lines'];
+const VALID_LAYOUTS = ['cover', 'chart', 'two_cols', 'one_col', 'multiline-type', 'floating-lines', 'footage-placeholder'];
 
 export function validateScript(script: any): ValidationResult {
   const errors: string[] = [];
@@ -68,19 +68,23 @@ function validateSection(
   warnings: string[],
   stats: Record<string, any>
 ) {
-  const sectionPrefix = `Section ${index} (${section.title || 'untitled'})`;
+  const sectionPrefix = `Section ${index} (${section.screen || 'untitled'})`;
 
   // Check required fields
   if (!section.id || typeof section.id !== 'string') {
     errors.push(`${sectionPrefix}: Missing or invalid field "id"`);
   }
 
-  if (!section.title || typeof section.title !== 'string') {
-    errors.push(`${sectionPrefix}: Missing or invalid field "title"`);
+  if (!section.screen || typeof section.screen !== 'string') {
+    errors.push(`${sectionPrefix}: Missing or invalid field "screen"`);
+  }
+
+  if (section.read_srt !== undefined && typeof section.read_srt !== 'string') {
+    errors.push(`${sectionPrefix}: Missing or invalid field "read_srt"`);
   }
 
   // Check layout
-  const layout = section.layout || 'two_cols';
+  const layout = section.layout || 'footage-placeholder';
   if (!VALID_LAYOUTS.includes(layout)) {
     errors.push(`${sectionPrefix}: Invalid layout type "${layout}". Must be one of: ${VALID_LAYOUTS.join(', ')}`);
   } else {
@@ -104,8 +108,15 @@ function validateSection(
     }
   }
 
-  // Validate content array
-  if (!Array.isArray(section.content)) {
+  // Validate content array depending on layout
+  const contentRequiredLayouts = ['two_cols', 'one_col', 'multiline-type', 'floating-lines'];
+  const isContentRequired = contentRequiredLayouts.includes(layout);
+
+  if (section.content === undefined || section.content === null) {
+    if (isContentRequired) {
+      errors.push(`${sectionPrefix}: Missing required field "content" for layout ${layout}`);
+    }
+  } else if (!Array.isArray(section.content)) {
     errors.push(`${sectionPrefix}: Missing or invalid field "content" (must be array)`);
   } else {
     if (section.content.length === 0) {
@@ -121,6 +132,11 @@ function validateSection(
   // Optional fields
   if (section.illustration && typeof section.illustration !== 'string') {
     warnings.push(`${sectionPrefix}: "illustration" should be a string`);
+  }
+
+  // Section-level read_srt validation (moved from content items)
+  if (section.read_srt && typeof section.read_srt !== 'string') {
+    warnings.push(`${sectionPrefix}: read_srt should be string`);
   }
 }
 
@@ -203,10 +219,7 @@ function validateContentItem(
   }
 
   // Optional fields validation
-  if (item.read_srt && typeof item.read_srt !== 'string') {
-    warnings.push(`${itemPrefix}: read_srt should be string`);
-  }
-
+  // read_srt moved to section level
   if (item.duration && typeof item.duration !== 'number') {
     warnings.push(`${itemPrefix}: duration should be number`);
   }

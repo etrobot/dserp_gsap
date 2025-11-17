@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const VALID_LAYOUTS = ['cover', 'chart', 'two_cols', 'one_col', 'multiline-type', 'floating-lines'];
+const VALID_LAYOUTS = ['cover', 'chart', 'two_cols', 'one_col', 'multiline-type', 'floating-lines', 'footage-placeholder'];
 
 function validateScript(script) {
   const errors = [];
@@ -51,17 +51,21 @@ function validateScript(script) {
 }
 
 function validateSection(section, index, errors, warnings, stats) {
-  const sectionPrefix = `Section ${index} (${section.title || 'untitled'})`;
+  const sectionPrefix = `Section ${index} (${section.screen || 'untitled'})`;
 
   if (!section.id || typeof section.id !== 'string') {
     errors.push(`${sectionPrefix}: Missing or invalid field "id"`);
   }
 
-  if (!section.title || typeof section.title !== 'string') {
-    errors.push(`${sectionPrefix}: Missing or invalid field "title"`);
+  if (!section.screen || typeof section.screen !== 'string') {
+    errors.push(`${sectionPrefix}: Missing or invalid field "screen"`);
   }
 
-  const layout = section.layout || 'two_cols';
+  if (section.read_srt !== undefined && typeof section.read_srt !== 'string') {
+    errors.push(`${sectionPrefix}: Missing or invalid field "read_srt"`);
+  }
+
+  const layout = section.layout || 'footage-placeholder';
   if (!VALID_LAYOUTS.includes(layout)) {
     errors.push(`${sectionPrefix}: Invalid layout type "${layout}". Must be one of: ${VALID_LAYOUTS.join(', ')}`);
   } else {
@@ -84,7 +88,15 @@ function validateSection(section, index, errors, warnings, stats) {
     }
   }
 
-  if (!Array.isArray(section.content)) {
+  // Validate content array depending on layout
+  const contentRequiredLayouts = ['two_cols', 'one_col', 'multiline-type', 'floating-lines'];
+  const isContentRequired = contentRequiredLayouts.includes(layout);
+
+  if (section.content === undefined || section.content === null) {
+    if (isContentRequired) {
+      errors.push(`${sectionPrefix}: Missing required field "content" for layout ${layout}`);
+    }
+  } else if (!Array.isArray(section.content)) {
     errors.push(`${sectionPrefix}: Missing or invalid field "content" (must be array)`);
   } else {
     if (section.content.length === 0) {

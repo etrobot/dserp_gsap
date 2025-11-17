@@ -4,15 +4,15 @@
   "sections": [
     {
       "id": "cover_n8n",
-      "title": "Turn N8N Workflows Into SaaS Products",
+      "screen": "Turn N8N Workflows Into SaaS Products",
       "illustration": "🤖",
       "layout": "cover",
+      "read_srt": "Hey there, welcome back. Today let's talk about one of the smartest ways to build a SaaS product without being a full-time developer, starting from zero, or raising money. It's all about leveraging existing automation workflows and turning them into streamlined products people will pay for.",
       "content": [
         {
           "data": {
             "description": "A zero-code path to revenue-ready automation"
           },
-          "read_srt": "Hey there, welcome back. Today let's talk about one of the smartest ways to build a SaaS product without being a full-time developer, starting from zero, or raising money. It's all about leveraging existing automation workflows and turning them into streamlined products people will pay for.",
           "showtime": 8
         }
       ],
@@ -20,9 +20,10 @@
     },
     {
       "id": "why_n8n",
-      "title": "Why N8N Workflows Are a Gold Mine",
+      "screen": "Why N8N Workflows Are a Gold Mine",
       "illustration": "💡",
       "layout": "two_cols",
+      "read_srt": "N8N is an incredibly powerful automation platform. It's open-source, self-hostable, and flexible enough to do just about anything Zapier or Make can do, but cheaper and more customizable. Because of that, there's an entire ecosystem of creators publishing free or paid workflows that do serious work for businesses. These workflows scrape and enrich leads, automate marketing follow-ups, process user generated content, and connect AI models to business workflows. Most of these workflows are built by power users for power users. They expect you to host N8N, configure APIs, handle authentication, and debug errors.",
       "content": [
         {
           "data": {
@@ -30,7 +31,6 @@
             "description": "N8N is open-source, self-hostable, and rivals Zapier or Make for flexibility.",
             "icon": "🛠️"
           },
-          "read_srt": "N8N is an incredibly powerful automation platform. It's open-source, self-hostable, and flexible enough to do just about anything Zapier or Make can do, but cheaper and more customizable.",
           "showtime": 7
         },
         {
@@ -39,7 +39,6 @@
             "description": "Creators publish free and paid workflows solving serious problems.",
             "icon": "🌐"
           },
-          "read_srt": "Because of that, there's an entire ecosystem of creators publishing free or paid workflows that do serious work for businesses.",
           "showtime": 7
         },
         {
@@ -48,7 +47,6 @@
             "description": "Workflows scrape leads, automate marketing, process UGC, and connect AI.",
             "icon": "✅"
           },
-          "read_srt": "These workflows scrape and enrich leads, automate marketing follow-ups, process user generated content, and connect AI models to business workflows.",
           "showtime": 7
         },
         {
@@ -57,7 +55,6 @@
             "description": "Hosting, auth, and debugging block everyday operators.",
             "icon": "🚫"
           },
-          "read_srt": "Most of these workflows are built by power users for power users. They expect you to host N8N, configure APIs, handle authentication, and debug errors.",
           "showtime": 7
         }
       ],
@@ -65,9 +62,10 @@
     },
     {
       "id": "opportunity_gap",
-      "title": "Bridge the Gap for Real Users",
+      "screen": "Bridge the Gap for Real Users",
       "illustration": "🌉",
       "layout": "one_col",
+      "read_srt": "The average small business owner or solo creator just wants the result, not the technical overhead. That's the gap you can turn into a business. You don't have to invent the automation from scratch. You just have to package it in a way that's effortless to use. Your entire value is that you made it easy for them by hiding the mess behind a smooth experience.",
       "content": [
         {
           "data": {
@@ -75,7 +73,6 @@
             "description": "Average operators just want results without technical setup.",
             "icon": "🎯"
           },
-          "read_srt": "The average small business owner or solo creator just wants the result, not the technical overhead.",
           "showtime": 6
         },
         {
@@ -84,7 +81,6 @@
             "description": "You don't have to invent the workflow, only package it.",
             "icon": "📦"
           },
-          "read_srt": "That's the gap you can turn into a business. You don't have to invent the automation from scratch. You just have to package it in a way that's effortless to use.",
           "showtime": 7
         },
         {
@@ -93,7 +89,6 @@
             "description": "Your value is making the entire experience effortless.",
             "icon": "✨"
           },
-          "read_srt": "Your entire value is that you made it easy for them by hiding the mess behind a smooth experience.",
           "showtime": 7
         }
       ],
@@ -101,9 +96,10 @@
     },
     {
       "id": "step_one",
-      "title": "Step 1 · Identify a Pain Point",
+      "screen": "Step 1 · Identify a Pain Point",
       "illustration": "🔍",
       "layout": "two_cols",
+      "read_srt": "Don't start by picking a workflow. Start by choosing a problem worth solving. Talk to potential users, read Reddit, watch YouTube comments, and learn where they're wasting hours. Ask what tasks people complain about automating and what's too technical for them right now. For example, they want to scrape leads from LinkedIn but can't figure it out, or they want AI to summarize emails but setup is too complex.",
       "content": [
         {
           "data": {
@@ -111,7 +107,6 @@
             "description": "Pick a painful, valuable task before choosing a workflow.",
             "icon": "🎯"
           },
-          "read_srt": "Don't start by picking a workflow. Start by choosing a problem worth solving.",
           "showtime": 6
         },
         {
@@ -120,7 +115,6 @@
             "description": "Talk to users, browse Reddit, watch YouTube comments.",
             "icon": "👂"
           },
-          "read_srt": "Talk to potential users, read Reddit, watch YouTube comments, and learn where they're wasting hours.",
           "showtime": 7
         },
         {
@@ -129,7 +123,6 @@
             "description": "Capture tasks that are too technical right now.",
             "icon": "📝"
           },
-          "read_srt": "Ask what tasks people complain about automating and what's too technical for them right now.",
           "showtime": 7
         },
         {
@@ -138,7 +131,6 @@
             "description": "Lead scraping or AI email summaries stuck in setup hell.",
             "icon": "😣"
           },
-          "read_srt": "For example, they want to scrape leads from LinkedIn but can't figure it out, or they want AI to summarize emails but setup is too complex.",
           "showtime": 7
         }
       ],
@@ -146,9 +138,10 @@
     },
     {
       "id": "step_two",
-      "title": "Step 2 · Source or Build the Automation",
+      "screen": "Step 2 · Source or Build the Automation",
       "illustration": "⚙️",
       "layout": "two_cols",
+      "read_srt": "Now that you know the problem, find or build the workflow. N8N has a massive library with tutorials, GitHub repos, and forums. Often someone has already built eighty percent of what you need, so start from their work. Your job is to clone it into your own N8N instance and make sure it works end to end. Customize as needed for your audience. This is your back-end logic, your engine, and your users never need to see it.",
       "content": [
         {
           "data": {
@@ -156,7 +149,6 @@
             "description": "Tap the N8N library, tutorials, GitHub repos, and forums.",
             "icon": "🔎"
           },
-          "read_srt": "Now that you know the problem, find or build the workflow. N8N has a massive library with tutorials, GitHub repos, and forums.",
           "showtime": 7
         },
         {
@@ -165,7 +157,6 @@
             "description": "Often someone already built most of what you need.",
             "icon": "♻️"
           },
-          "read_srt": "Often someone has already built eighty percent of what you need, so start from their work.",
           "showtime": 6
         },
         {
@@ -174,7 +165,6 @@
             "description": "Bring the workflow into your own N8N instance and make it run end-to-end.",
             "icon": "🧪"
           },
-          "read_srt": "Your job is to clone it into your own N8N instance and make sure it works end to end.",
           "showtime": 6
         },
         {
@@ -183,7 +173,6 @@
             "description": "Tweak steps and logic so it matches your users' needs.",
             "icon": "🎨"
           },
-          "read_srt": "Customize as needed for your audience. This is your back-end logic, your engine, and your users never need to see it.",
           "showtime": 7
         }
       ],
@@ -191,9 +180,10 @@
     },
     {
       "id": "step_three",
-      "title": "Step 3 · Simplify the Experience",
+      "screen": "Step 3 · Simplify the Experience",
       "illustration": "🧩",
       "layout": "two_cols",
+      "read_srt": "Here's the real secret sauce: abstraction. Your user doesn't want to see the workflow. They want a form, a button, a result. Give them simple inputs like a web form or file upload. Skip the OAuth screens they can't understand and never force them to configure webhook URLs. Use tools like Lovable, Cursor, Fire Studio, or your own code to wrap the experience. Your value is making it easy.",
       "content": [
         {
           "data": {
@@ -201,7 +191,6 @@
             "description": "Hide the workflow; surface only what users must touch.",
             "icon": "🪄"
           },
-          "read_srt": "Here's the real secret sauce: abstraction. Your user doesn't want to see the workflow.",
           "showtime": 6
         },
         {
@@ -210,7 +199,6 @@
             "description": "Use lightweight forms, uploads, or a single button.",
             "icon": "📝"
           },
-          "read_srt": "They want a form, a button, a result. Give them simple inputs like a web form or file upload.",
           "showtime": 6
         },
         {
@@ -219,7 +207,6 @@
             "description": "No OAuth screens, webhooks, or jargon-heavy setup.",
             "icon": "🚫"
           },
-          "read_srt": "Skip the OAuth screens they can't understand and never force them to configure webhook URLs.",
           "showtime": 6
         },
         {
@@ -228,7 +215,6 @@
             "description": "Use Lovable, Cursor, Fire Studio, or custom code for UI.",
             "icon": "🧰"
           },
-          "read_srt": "Use tools like Lovable, Cursor, Fire Studio, or your own code to wrap the experience. Your value is making it easy.",
           "showtime": 7
         }
       ],
@@ -236,9 +222,10 @@
     },
     {
       "id": "step_four",
-      "title": "Step 4 · Deliver Real Value",
+      "screen": "Step 4 · Deliver Real Value",
       "illustration": "🎁",
       "layout": "two_cols",
+      "read_srt": "It's not enough for the workflow to run. It has to deliver value, so polish the output. Turn raw JSON into a clean PDF report, send a branded email instead of API gibberish, or show them charts they can act on. This is where you differentiate from just automation. You're turning it into a product that feels complete. You're selling certainty that it works, is easy, and delivers results every time.",
       "content": [
         {
           "data": {
@@ -246,7 +233,6 @@
             "description": "Transform raw data into user-ready deliverables.",
             "icon": "✨"
           },
-          "read_srt": "It's not enough for the workflow to run. It has to deliver value, so polish the output.",
           "showtime": 6
         },
         {
@@ -255,7 +241,6 @@
             "description": "Think PDF reports, branded emails, or clear charts.",
             "icon": "📈"
           },
-          "read_srt": "Turn raw JSON into a clean PDF report, send a branded email instead of API gibberish, or show them charts they can act on.",
           "showtime": 7
         },
         {
@@ -264,7 +249,6 @@
             "description": "Your product is certainty, not workflow steps.",
             "icon": "🛡️"
           },
-          "read_srt": "This is where you differentiate from just automation. You're turning it into a product that feels complete.",
           "showtime": 6
         },
         {
@@ -273,7 +257,6 @@
             "description": "Handle the entire journey so users simply receive results.",
             "icon": "📬"
           },
-          "read_srt": "You're selling certainty that it works, is easy, and delivers results every time.",
           "showtime": 6
         }
       ],
@@ -281,9 +264,10 @@
     },
     {
       "id": "step_five",
-      "title": "Step 5 · Design the Business Model",
+      "screen": "Step 5 · Design the Business Model",
       "illustration": "💼",
       "layout": "two_cols",
+      "read_srt": "Now you monetize. Options include pay-per-use with AI credit margin, monthly plans with usage tiers, or one-time lifetime deals for early users. You can create custom plans for power users who need more volume or deeper integrations. Handle the AI cost for them and bake it into your price, removing one more friction point. Remember, users will happily pay extra to avoid complexity and get guaranteed outcomes.",
       "content": [
         {
           "data": {
@@ -291,7 +275,6 @@
             "description": "Blend pay-per-use, subscriptions, or lifetime offers.",
             "icon": "💳"
           },
-          "read_srt": "Now you monetize. Options include pay-per-use with AI credit margin, monthly plans with usage tiers, or one-time lifetime deals for early users.",
           "showtime": 7
         },
         {
@@ -300,7 +283,6 @@
             "description": "Offer custom tiers for high-volume or advanced teams.",
             "icon": "📊"
           },
-          "read_srt": "You can create custom plans for power users who need more volume or deeper integrations.",
           "showtime": 6
         },
         {
@@ -309,7 +291,6 @@
             "description": "Handle model usage and bake it into pricing.",
             "icon": "🤖"
           },
-          "read_srt": "Handle the AI cost for them and bake it into your price, removing one more friction point.",
           "showtime": 6
         },
         {
@@ -318,7 +299,6 @@
             "description": "People pay extra to avoid technical complexity.",
             "icon": "💡"
           },
-          "read_srt": "Remember, users will happily pay extra to avoid complexity and get guaranteed outcomes.",
           "showtime": 6
         }
       ],
@@ -326,9 +306,10 @@
     },
     {
       "id": "examples",
-      "title": "Example SaaS Concepts",
+      "screen": "Example SaaS Concepts",
       "illustration": "🧠",
       "layout": "one_col",
+      "read_srt": "Lead gen SaaS workflows scrape leads, enrich data, and email CSVs while users pay monthly for credits. A content summarizer takes emails or PDFs, runs OpenAI summarization, and returns easy-to-read briefs for lawyers, consultants, or students. An AI copy generator bundles pre-built templates, N8N, and your prompt library so users select a template, add inputs, and click generate. Automated data cleaning lets users upload a CSV while N8N runs cleaning steps and returns a polished file for e-commerce teams or analysts.",
       "content": [
         {
           "data": {
@@ -336,7 +317,6 @@
             "description": "Scrape and enrich leads, deliver CSVs, sell monthly credits.",
             "icon": "📇"
           },
-          "read_srt": "Lead gen SaaS workflows scrape leads, enrich data, and email CSVs while users pay monthly for credits.",
           "showtime": 6
         },
         {
@@ -345,7 +325,6 @@
             "description": "Upload emails or PDFs, get instant AI summaries.",
             "icon": "🗂️"
           },
-          "read_srt": "A content summarizer takes emails or PDFs, runs OpenAI summarization, and returns easy-to-read briefs for lawyers, consultants, or students.",
           "showtime": 7
         },
         {
@@ -354,7 +333,6 @@
             "description": "Templates plus N8N plus OpenAI prompts delivered on demand.",
             "icon": "✍️"
           },
-          "read_srt": "An AI copy generator bundles pre-built templates, N8N, and your prompt library so users select a template, add inputs, and click generate.",
           "showtime": 6
         },
         {
@@ -363,7 +341,6 @@
             "description": "Users upload CSVs, receive polished files for analytics.",
             "icon": "🧹"
           },
-          "read_srt": "Automated data cleaning lets users upload a CSV while N8N runs cleaning steps and returns a polished file for e-commerce teams or analysts.",
           "showtime": 7
         }
       ],
@@ -371,9 +348,10 @@
     },
     {
       "id": "why_it_works",
-      "title": "Why This Model Wins",
+      "screen": "Why This Model Wins",
       "illustration": "🏆",
       "layout": "two_cols",
+      "read_srt": "The truth is software isn't about code. It's about removing friction for the customer. N8N gives you all the technical power, but most people can't or won't use it directly. They'll pay you to hide the mess. You're not selling a workflow. You're selling certainty that it works and delivers results. These ideas don't need giant teams. One founder who thinks like a problem solver can succeed.",
       "content": [
         {
           "data": {
@@ -381,7 +359,6 @@
             "description": "Winning products eliminate effort, not just ship features.",
             "icon": "🧽"
           },
-          "read_srt": "The truth is software isn't about code. It's about removing friction for the customer.",
           "showtime": 6
         },
         {
@@ -390,7 +367,6 @@
             "description": "You harness enterprise automation without exposing it.",
             "icon": "⚡"
           },
-          "read_srt": "N8N gives you all the technical power, but most people can't or won't use it directly.",
           "showtime": 6
         },
         {
@@ -399,7 +375,6 @@
             "description": "Customers pay for guaranteed ease and results.",
             "icon": "🔒"
           },
-          "read_srt": "They'll pay you to hide the mess. You're not selling a workflow. You're selling certainty that it works and delivers results.",
           "showtime": 7
         },
         {
@@ -408,7 +383,6 @@
             "description": "One operator can launch and grow these products.",
             "icon": "🙋"
           },
-          "read_srt": "These ideas don't need giant teams. One founder who thinks like a problem solver can succeed.",
           "showtime": 6
         }
       ],
@@ -416,43 +390,39 @@
     },
     {
       "id": "blueprint_recap",
-      "title": "Blueprint Recap",
+      "screen": "Blueprint Recap",
       "illustration": "🗺️",
       "layout": "multiline-type",
+      "read_srt": "Step one, find a real problem people want solved. Step two, source or build the N8N automation that powers the solution. Step three, abstract away the complexity with a simple user interface. Step four, make the output polished and useful so it feels like a product. Step five, choose a business model and launch so people can rely on it.",
       "content": [
         {
           "data": {
             "title": "1️⃣ Find a real problem people want solved"
           },
-          "read_srt": "Step one, find a real problem people want solved.",
           "showtime": 4
         },
         {
           "data": {
             "title": "2️⃣ Source or build the N8N automation"
           },
-          "read_srt": "Step two, source or build the N8N automation that powers the solution.",
           "showtime": 4
         },
         {
           "data": {
             "title": "3️⃣ Abstract the complexity with a simple UI"
           },
-          "read_srt": "Step three, abstract away the complexity with a simple user interface.",
           "showtime": 4
         },
         {
           "data": {
             "title": "4️⃣ Make the output polished and useful"
           },
-          "read_srt": "Step four, make the output polished and useful so it feels like a product.",
           "showtime": 4
         },
         {
           "data": {
             "title": "5️⃣ Choose a business model and launch"
           },
-          "read_srt": "Step five, choose a business model and launch so people can rely on it.",
           "showtime": 4
         }
       ],
@@ -460,7 +430,7 @@
     },
     {
       "id": "cta",
-      "title": "Call to Action",
+      "screen": "Call to Action",
       "illustration": "📣",
       "layout": "floating-lines",
       "content": [

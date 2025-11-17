@@ -43,17 +43,14 @@ function AppContent() {
           total={scriptData.sections.length}
         />
       )
-      // Extract reading text from content array's read_srt field
-      // Filter out empty strings and join with space
-      const readTexts = section.content
-        ?.map(item => item.read_srt)
-        .filter(text => text && text.trim().length > 0) || []
-
-      subtitleArr.push(readTexts.join(' '))
+      // Extract reading text from section-level read_srt field
+      const sectionReadText = section.read_srt || ''
+      subtitleArr.push(sectionReadText)
 
       // Extract content items for sequential reading
-      const contentItems = section.content?.map((item, idx) => ({
-        text: item.read_srt || '',
+      // Now each section has a single read_srt, but we still keep content structure for showtime/audio per item
+      const contentItems = (section.content || []).map((item, idx) => ({
+        text: idx === 0 ? (section.read_srt || '') : '',
         audioFile: item.audioFile,
         showtime: item.showtime,
         sectionId: section.id,

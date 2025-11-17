@@ -51,7 +51,7 @@ const CoverLayout = ({ section }: CoverLayoutProps) => {
                 {isImageUrl ? (
                   <img 
                     src={section.illustration} 
-                    alt={section.title || 'Cover illustration'}
+                    alt={(section.screen || section.title) || 'Cover illustration'}
                     className="max-w-full max-h-[500px] object-contain rounded-lg shadow-lg"
                     style={{
                       boxShadow: `0 0 20px ${borderColor}40`,
@@ -65,14 +65,14 @@ const CoverLayout = ({ section }: CoverLayoutProps) => {
             
             {/* Right Column: Title + Description (50%) */}
             <div className="w-1/2 flex flex-col gap-6 text-left">
-              {section.title && (
+              {(section.screen || section.title) && (
                 <div
                   style={{
                     textShadow: `0 0 10px ${borderColor}`,
                   }}
                 >
                   <SimpleCharType
-                    text={section.title}
+                    text={section.screen || section.title}
                     className="text-5xl md:text-6xl font-black text-white leading-tight break-words"
                     speed={50}
                     initialDelay={0}
@@ -87,7 +87,7 @@ const CoverLayout = ({ section }: CoverLayoutProps) => {
                   style={{ color: borderColor }}
                   typingSpeed={30}
                   showCursor={false}
-                  initialDelay={section.title ? section.title.length * 50 + 300 : 0}
+                  initialDelay={(section.screen || section.title) ? (section.screen || section.title)!.length * 50 + 300 : 0}
                 />
               )}
             </div>

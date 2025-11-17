@@ -10,6 +10,7 @@ interface ChartLayoutProps {
 }
 
 const ChartLayout = ({ section, index, total }: ChartLayoutProps) => {
+  const heading = section.screen || section.title;
   const { config: chartConfig, loading: chartLoading, error: chartError } = useChartConfig(
     section.chartPath,
     section.chartConfig
@@ -29,9 +30,9 @@ const ChartLayout = ({ section, index, total }: ChartLayoutProps) => {
       {/* Header with absolute positioning */}
       <div className="absolute top-0 left-0 right-0 z-10 flex items-start px-8 pt-4 pb-2">
         <div className="flex items-center gap-3">
-          {section.title && (
+          {heading && (
             <TextType
-              text={section.title}
+              text={heading}
               as="h1"
               className="text-2xl md:text-3xl font-bold text-white"
               showCursor={false}
